@@ -4,5 +4,5 @@ Inspired by Gym<br/>
 <br/>
 <br/>
 
-by: Alfonso Brown, Rodrigo Landa and Fernando Cossio. <br/>
+##### _by: Alfonso Brown, Rodrigo Landa and Fernando Cossio._ <br/>
 2019

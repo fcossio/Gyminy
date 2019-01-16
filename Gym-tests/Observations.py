@@ -1,3 +1,8 @@
+#Observations
+
+#This should give a video and output like the following.
+#You should be able to see where the resets happen.
+
 import gym
 env = gym.make('CartPole-v0')
 for i_episode in range(20):

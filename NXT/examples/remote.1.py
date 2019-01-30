@@ -7,6 +7,7 @@ import pygame
 from nxt.sensor import *
 from nxt.motor import *
 import nxt.bluesock
+import numpy as np
 
 
 def bumper_car(b, m_left, m_right, b_left, b_right, ultrasonic, compass):
@@ -21,16 +22,15 @@ def bumper_car(b, m_left, m_right, b_left, b_right, ultrasonic, compass):
     return car
 
 def turnmotor(m, power):
-    power = int(power*4/5)
-    a = m.get_tacho().tacho_count
-    m.run(int(power/2))
-    time.sleep(0.1)
+    a=0 #(np.random.rand()-0.5) * 20
+    power = power + a
+    #a = m.get_tacho().tacho_count
     m.run(power)
     time.sleep(0.1)
     m.idle()
-    b = m.get_tacho().tacho_count
-    print(b)
-    return a
+    #b = m.get_tacho().tacho_count
+    #print(b)
+    return True
 
 #connect to brick
 print 'connecting to ', brick_MAC, '...'
@@ -49,7 +49,8 @@ screen = pygame.display.set_mode((640, 480))
 print(pygame.key.get_focused())
 r_speed = 0
 l_speed = 0
-while True: 
+encoders_old = [car['left_wheel'].get_tacho().tacho_count,car['right_wheel'].get_tacho().tacho_count]
+while True:
     keys = pygame.key.get_pressed()
     if keys[pygame.K_UP]:
         move = 'forward'
@@ -81,17 +82,17 @@ while True:
     
     
     if move == 'forward':
-        print(thread.start_new_thread(turnmotor, (car['right_wheel'], 100)))
-        print(thread.start_new_thread(turnmotor, (car['left_wheel'], 100)))
+        thread.start_new_thread(turnmotor, (car['right_wheel'], 100))
+        thread.start_new_thread(turnmotor, (car['left_wheel'], 100))
     if move == 'backward':
         thread.start_new_thread(turnmotor, (car['right_wheel'], -100))
         thread.start_new_thread(turnmotor, (car['left_wheel'], -100))
     if move == 'right':
-        thread.start_new_thread(turnmotor, (car['right_wheel'], -80))
-        thread.start_new_thread(turnmotor, (car['left_wheel'], 80))
+        thread.start_new_thread(turnmotor, (car['right_wheel'], -100))
+        thread.start_new_thread(turnmotor, (car['left_wheel'], 100))
     if move == 'left':
-        thread.start_new_thread(turnmotor, (car['right_wheel'], 80))
-        thread.start_new_thread(turnmotor, (car['left_wheel'], -80))
+        thread.start_new_thread(turnmotor, (car['right_wheel'], 100))
+        thread.start_new_thread(turnmotor, (car['left_wheel'], -100))
     if move == 'forward-right':
         thread.start_new_thread(turnmotor, (car['right_wheel'], 80))
         thread.start_new_thread(turnmotor, (car['left_wheel'], 100))
@@ -104,13 +105,26 @@ while True:
     if move == 'backward-left':
         thread.start_new_thread(turnmotor, (car['right_wheel'], -100))
         thread.start_new_thread(turnmotor, (car['left_wheel'], -80))
-    distance = car['ultrasonic'].get_sample()
-    direction = car['compass'].get_sample()
-    bumpers = [car['left_bumper'].get_sample(), car['right_bumper'].get_sample()]
-    encoders = [car['left_wheel'].get_tacho().tacho_count,car['right_wheel'].get_tacho().tacho_count]
-    print 'bumpers ', bumpers , 'ultrasonic ', distance, 'direction', direction, 'encoders', encoders
+    if move != 'none':
+        
+        is_moving = True
+        while is_moving:
+            encoders_moving = [car['left_wheel'].get_tacho().tacho_count,car['right_wheel'].get_tacho().tacho_count]
+            #time.sleep(0.01)
+            encoders_moving = np.subtract([car['left_wheel'].get_tacho().tacho_count,car['right_wheel'].get_tacho().tacho_count], encoders_moving)
+            #print encoders_moving
+            if encoders_moving[0]==0 and encoders_moving[1]==0: is_moving = False
 
-    #time.sleep(0.05)
+        distance = car['ultrasonic'].get_sample()
+        direction = car['compass'].get_sample()
+        encoders_new = [car['left_wheel'].get_tacho().tacho_count,car['right_wheel'].get_tacho().tacho_count]
+        encoders_dif = np.subtract(encoders_new , encoders_old)
+        encoders_old = encoders_new
+        bumpers = [car['left_bumper'].get_sample(), car['right_bumper'].get_sample()]
+        print 'bumpers ', bumpers , 'ultrasonic ', distance, 'direction', direction, 'encoders', encoders_dif
+    else:
+        time.sleep(0.1)
+        #print(car['compass'].get_sample())
     #except:
     #print('exiting')
     #break  # if user pressed a key other than the given key the loop will break

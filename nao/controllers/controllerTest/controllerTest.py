@@ -8,14 +8,21 @@ from gym.utils import seeding
 
 env = gym.make('gym_nao_standUp-v0')
 
-obs = env.reset()
-action = env.action_space.sample()
+episodes = 1000
 
-while True:
-    env.step(action)
+for i in range(episodes):
 
-    if env.exit == -1:
-        print("Exit")
-        break
+    action = env.action_space.sample()
 
+    for i in range(50):
+        env.step(action)
+
+        if env.exit == -1:
+            print("Exit")
+            break
+
+        time.sleep(0.03)
+
+    print("Episode Terminated!")
+    obs = env.reset()
     time.sleep(1)

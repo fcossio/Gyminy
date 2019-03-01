@@ -1,26 +1,33 @@
-from controller import Robot, Accelerometer, Camera, DistanceSensor, \
+from controller import Supervisor, Accelerometer, Camera, DistanceSensor, \
                        GPS, Gyro, InertialUnit, Keyboard, LED, Motion, \
                        Motor, TouchSensor
+#import numpy as np
 
 # this is the main class
-class Nao (Robot):
+class Nao (Supervisor):
     PHALANX_MAX = 8
 
     # the accelerometer axes are oriented as on the real robot
     # however the sign of the returned values may be opposite
     def getAcceleration(self):
-        acc = self.accelerometer.getValues()
-        print('----------accelerometer----------')
-        print('acceleration: [ x y z ] = [%f %f %f]' % (acc[0], acc[1], acc[2]))
+        acc = [0, 0, 0]
+        acc_real = self.accelerometer.getValues()
+        min = -20
+        max = 20
+        acc[0] = ((acc_real[0] - min)/(max-min)) * 2 - 1
+        acc[1] = ((acc_real[1] - min)/(max-min)) * 2 - 1
+        acc[2] = ((acc_real[2] - min)/(max-min)) * 2 - 1
         return acc[0], acc[1], acc[2]
 
     # the gyro axes are oriented as on the real robot
     # however the sign of the returned values may be opposite
     def getGyroscope(self):
-        vel = self.gyro.getValues()
-        print('----------gyro----------')
-        # z value is meaningless due to the orientation of the Gyro
-        print('angular velocity: [ x y ] = [%f %f]' % (vel[0], vel[1]))
+        vel = [0, 0]
+        vel_real = self.gyro.getValues()
+        min = -20
+        max = 20
+        vel[0] = ((vel_real[0] - min)/(max-min)) * 2 - 1
+        vel[1] = ((vel_real[1] - min)/(max-min)) * 2 - 1
         return vel[0], vel[1]
 
     def getPos(self):
@@ -32,8 +39,6 @@ class Nao (Robot):
     # the InertialUnit roll/pitch angles are equal to naoqi's AngleX/AngleY
     def getRPY(self):
         rpy = self.inertialUnit.getRollPitchYaw()
-        print('----------inertial unit----------')
-        print('roll/pitch/yaw: [%f %f %f]' % (rpy[0], rpy[1], rpy[2]))
         return rpy[0], rpy[1], rpy[2]
 
     def getFootSensors(self):
@@ -102,9 +107,6 @@ class Nao (Robot):
         dist = []
         for i in range(0, len(self.us)):
             dist.append(self.us[i].getValue())
-
-        print('-----ultrasound sensors-----')
-        print('left: %f m, right %f m' % (dist[0], dist[1]))
         return dist[0], dist[1]
 
     def printCameraImage(self, camera):
@@ -114,10 +116,6 @@ class Nao (Robot):
 
         # read rgb pixel values from the camera
         image = camera.getImage()
-
-        print('----------camera image (gray levels)---------')
-        print('original resolution: %d x %d, scaled to %d x %f' \
-              % (width, height, width/scaled, height/scaled))
 
         for y in range(0, height/scaled):
             line = ''
@@ -231,14 +229,8 @@ class Nao (Robot):
             self.maxPhalanxMotorPosition.append(self.rphalanx[i].getMaxPosition())
             self.minPhalanxMotorPosition.append(self.rphalanx[i].getMinPosition())
 
-        # shoulder pitch motors
-        self.RShoulderPitch = self.getMotor("RShoulderPitch");
-        self.LShoulderPitch = self.getMotor("LShoulderPitch");
-
-
     def getMotorsLimits(self):
         #returns a dict with the name of the motor as key and a tuple with Limits (min, max)
-        self.devicesNumber = self.getNumberOfDevices()
         deviceList = []
         jointLimits = dict()
         for i in range(self.devicesNumber):
@@ -250,10 +242,33 @@ class Nao (Robot):
                 jointLimits[name] = (min,max)
         return jointLimits
 
+    def getMotorSensorsNames(self):
+        motorSensorsNames = []
+        for i in range(self.devicesNumber):
+            deviceType = self.getDeviceByIndex(i).getNodeType()
+            if deviceType == 47:
+                name = self.getDeviceByIndex(i).getName()
+                self.getPositionSensor(name).enable(self.timeStep)
+                motorSensorsNames.append(name)
+        return motorSensorsNames
+
+    def readMotorPosition(self):
+        readings = list()
+        for s in self.motorSensorsNames:
+            m = s[0:-1]
+            real_pos = self.getPositionSensor(s).getValue()
+            min = self.motorLimits[m][0]
+            max = self.motorLimits[m][1]
+            pos = ((real_pos - min) / (max-min) ) * 2 - 1
+            readings.append(pos)
+        return readings
+
     def __init__(self):
-        Robot.__init__(self)
+        Supervisor.__init__(self)
         self.currentlyPlaying = False
+        self.devicesNumber = self.getNumberOfDevices()
         # initialize stuff
         self.findAndEnableDevices()
         # get motors and its limits:
         self.motorLimits = self.getMotorsLimits()
+        self.motorSensorsNames = self.getMotorSensorsNames()

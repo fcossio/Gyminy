@@ -24,8 +24,8 @@ class Nao (Supervisor):
     def getGyroscope(self):
         vel = [0, 0]
         vel_real = self.gyro.getValues()
-        min = -20
-        max = 20
+        min = -6
+        max = 6
         vel[0] = ((vel_real[0] - min)/(max-min)) * 2 - 1
         vel[1] = ((vel_real[1] - min)/(max-min)) * 2 - 1
         return vel[0], vel[1]
@@ -38,70 +38,52 @@ class Nao (Supervisor):
 
     # the InertialUnit roll/pitch angles are equal to naoqi's AngleX/AngleY
     def getRPY(self):
-        rpy = self.inertialUnit.getRollPitchYaw()
+        rpy_real = self.inertialUnit.getRollPitchYaw()
+        min = -3.14
+        max = 3.14
+        rpy[0] = ((vel_real[0] - min)/(max-min)) * 2 - 1
+        rpy[1] = ((vel_real[1] - min)/(max-min)) * 2 - 1
         return rpy[0], rpy[1], rpy[2]
 
     def getFootSensors(self):
         newtons = 0.0
         fsv = [] # force sensor values
-
         fsv.append(self.fsr[0].getValues())
         fsv.append(self.fsr[1].getValues())
-
         l = []
         r = []
-
-        newtonsLeft = 0
-        newtonsRight = 0
-
+        #newtonsLeft = 0
+        #newtonsRight = 0
         # The coefficients were calibrated against the real
         # robot so as to obtain realistic sensor values.
         l.append(fsv[0][2] / 3.4 + 1.5 * fsv[0][0] + 1.15 * fsv[0][1]) # Left Foot Front Left
         l.append(fsv[0][2] / 3.4 + 1.5 * fsv[0][0] - 1.15 * fsv[0][1]) # Left Foot Front Right
         l.append(fsv[0][2] / 3.4 - 1.5 * fsv[0][0] - 1.15 * fsv[0][1]) # Left Foot Rear Right
         l.append(fsv[0][2] / 3.4 - 1.5 * fsv[0][0] + 1.15 * fsv[0][1]) # Left Foot Rear Left
-
         r.append(fsv[1][2] / 3.4 + 1.5 * fsv[1][0] + 1.15 * fsv[1][1]) # Right Foot Front Left
         r.append(fsv[1][2] / 3.4 + 1.5 * fsv[1][0] - 1.15 * fsv[1][1]) # Right Foot Front Right
         r.append(fsv[1][2] / 3.4 - 1.5 * fsv[1][0] - 1.15 * fsv[1][1]) # Right Foot Rear Right
         r.append(fsv[1][2] / 3.4 - 1.5 * fsv[1][0] + 1.15 * fsv[1][1]) # Right Foot Rear Left
-
         for i in range(0, len(l)):
+            min = 0
+            max = 25
             l[i] = max(min(l[i], 25), 0)
+            #newtonsLeft += l[i]
+            l[i] = ((l[i] - min)/(max-min)) * 2 - 1
             r[i] = max(min(r[i], 25), 0)
-            newtonsLeft += l[i]
-            newtonsRight += r[i]
+            #newtonsRight += r[i]
+            r[i] = ((r[i] - min)/(max-min)) * 2 - 1
 
-        print('----------foot sensors----------')
-        print('+ left ---- right +')
-        print('+-------+ +-------+')
-        print('|'  + str(round(l[0],1)) + \
-              '  ' + str(round(l[1],1)) + \
-              '| |'+ str(round(r[0],1)) + \
-              '  ' + str(round(r[1],1)) + \
-              '|  front')
-        print('| ----- | | ----- |')
-        print('|'  + str(round(l[3],1)) + \
-              '  ' + str(round(l[2],1)) + \
-              '| |'+ str(round(r[3],1)) + \
-              '  ' + str(round(r[2],1)) + \
-              '|  back')
-        print('+-------+ +-------+')
-        print('total: %f Newtons, %f kilograms' \
-              % ((newtonsLeft + newtonsRight), ((newtonsLeft + newtonsRight)/9.81)))
+        #print('total: %f Newtons, %f kilograms' % ((newtonsLeft + newtonsRight), ((newtonsLeft + newtonsRight)/9.81)))
+        return l, r
 
     def printFootBumpers(self):
         ll = self.lfootlbumper.getValue()
         lr = self.lfootrbumper.getValue()
         rl = self.rfootlbumper.getValue()
         rr = self.rfootrbumper.getValue()
-        print('----------foot bumpers----------')
-        print('+ left ------ right +')
-        print('+--------+ +--------+')
-        print('|'  + str(ll) + '  ' + str(lr) + '| |'+ str(rl) + '  ' + str(rr) + '|')
-        print('|        | |        |')
-        print('|        | |        |')
-        print('+--------+ +--------+')
+
+        return ll, lr, rl, rr
 
     def getUltrasoundSensors(self):
         dist = []

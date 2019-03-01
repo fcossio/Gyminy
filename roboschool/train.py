@@ -63,7 +63,7 @@ def evaluate(model, num_steps=1000):
 
 env_id = "RoboschoolHumanoid-v1"
 save_path = 'Humanoid.pkl'
-new_model = False
+new_model = True
 load_path = 'Humanoid.pkl.recovered'
 
 tensorboard_path = 'tbHumanoid2'

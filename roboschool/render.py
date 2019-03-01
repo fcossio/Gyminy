@@ -34,7 +34,7 @@ def main():
     video_folder = '.'
     render_time_steps = 20000
 
-    new_model = False
+    new_model = True
     learning_time_steps = 100000
 
     env = gym.make(envId)

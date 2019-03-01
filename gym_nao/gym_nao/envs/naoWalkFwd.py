@@ -10,11 +10,16 @@ class NaoForwardWalkEnv(gym.Env):
     def __init__(self):
 
         startPos = [0,0,.35]
-        self.nao = p.loadURDF("../nao_description/urdf/naoV50_generated_urdf/nao.urdf",startPos, flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT )
-        self.important_joints = [1, 2, 13, 14, 15, 16, 17, 18, 26, 27, 28, 29, 30, 31,
-                                39, 40, 41, 42, 43, 44, 48, 49, 50, 51, 52, 53, 54, 55,
-                                56, 57, 58, 59, 60, 61, 65, 66, 67, 68, 69, 70, 71, 72]
+        self.nao = p.loadURDF("/home/nebugate/Nebugate/Gyminy/gym_nao/gym_nao/nao_description/urdf/naoV50_generated_urdf/nao.urdf",startPos, flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT )
+        self.important_joints = [1, 2, 13, 14, 15, 16, 17, 
+                                18, 26, 27, 28, 29, 30, 31,
+                                39, 40, 41, 42, 43, 44, 48,
+                                49, 50, 51, 52, 53, 54, 55,
+                                56, 57, 58, 59, 60, 61, 65,
+                                66, 67, 68, 69, 70, 71, 72]
 
+        self.uninportant_joints = [1, 2, 39, 40, 41, 42, 43, 44, 48, 49, 50, 51, 52, 53, 54, 55,
+                                    56, 57, 58, 59, 60, 61, 65, 66, 67, 68, 69, 70, 71, 72]
         high = np.ones([len(self.important_joints)])
         self.action_space = spaces.Box(-high, high)
         high = np.inf*np.ones([90])
@@ -22,7 +27,8 @@ class NaoForwardWalkEnv(gym.Env):
 
         for i in range (p.getNumJoints(self.nao)):
             info = p.getJointInfo(self.nao,i)
-            p.setJointMotorControl2(self.nao,i,p.POSITION_CONTROL,targetPosition=0,force=1000)
+            print(info[0], info[1])
+            p.setJointMotorControl2(self.nao,i,p.POSITION_CONTROL,targetPosition=0,force=10)
 
         p.configureDebugVisualizer(p.COV_ENABLE_RENDERING,1)
 
@@ -30,7 +36,7 @@ class NaoForwardWalkEnv(gym.Env):
         p.setTimeStep(self.timeStep)
 
     def step(self, action):
-        p.setJointMotorControlArray(self.nao,self.important_joints,p.POSITION_CONTROL,targetPositions=action,forces=[1000]*len(self.important_joints))
+        p.setJointMotorControlArray(self.nao,self.important_joints,p.POSITION_CONTROL,targetPositions=action,forces=[50]*len(self.important_joints))
 
         p.stepSimulation()
 
@@ -46,6 +52,7 @@ class NaoForwardWalkEnv(gym.Env):
 
         for i in self.important_joints:
             info = p.getJointState(self.nao, i)
+            #print(info)
             obs.append(info[0])
             obs.append(info[1])
 
@@ -81,7 +88,11 @@ class NaoForwardWalkEnv(gym.Env):
         return None
 
     def _get_reward(self, state):
-
+        reward = [0,0,0,0]
+        reward[0] = None
+        reward[1] = None
+        reward[2] = None
+        reward[3] = None
         if state[5] < 0.4:
             return -100
 
@@ -95,6 +106,9 @@ class NaoForwardWalkEnv(gym.Env):
         return 0
 
     def _is_done(self, obs):
+        base_position,base_orientation = p.getBasePositionAndOrientation(self.nao)
+        print('base position ' + str(base_position))
+        print('base orientation' + str(base_orientation))
         if obs[5] < 0.4:
             return True
         else:

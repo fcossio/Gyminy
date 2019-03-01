@@ -22,26 +22,26 @@ class NaoStandUpEnv(gym.Env):
         high = np.inf*np.ones([90])
         self.observation_space = spaces.Box(-high, high)
 
-        self.initialMotors = self.robot.readMotorPosition()
-        self.initialPosition = self.robot.getSelf().getPosition()
-        self.initialAccel = (0, 0, 0)
-        self.initialGyro = (0, 0)
+        self.timeout = 0
+        self.fallen = False
 
     def step(self, action):
-        self.exit = self.robot.step(self.robot.timeStep)
-
+        for i in range(15):
+            self.exit = self.robot.step(self.robot.timeStep)
+        self.timeout += 1
         jointPositions = dict()
         for j in range(len(self.motors)):
             jointPositions[self.motors[j]] = action[j]
 
         self.robot.setJointPositions(jointPositions)
+        readings = self.robot.getAllReadings()
+        ax,ay,az = readings[0:3]
+        roll,pitch = readings[5:7]
+        gyro = readings[3:5]
+        x,y,z = self.robot.getPos()
+        motors = readings[21:]
 
-        accel = self.robot.getAcceleration()
-        gyro = self.robot.getGyroscope()
-        position = self.robot.getPos()
-        motors = self.robot.readMotorPosition()
-
-        obs = [accel[0], accel[1], accel[2], gyro[0], gyro[1]]
+        obs = [x,y,z,ax,ay,az,roll,pitch,0,gyro[0],gyro[1]]
 
         for m in motors:
             obs.append(m)
@@ -50,29 +50,55 @@ class NaoStandUpEnv(gym.Env):
 
         return obs, self._get_reward(obs), self._is_done(obs), None
 
-    def reset(self):
-        self.robot.simulationReset()
-
     def _get_reward(self, state):
 
-        inclination = abs(np.arctan(state[0]/state[1]))
-        z_position = self.robot.getPos()[2]
+        y_position = state[1]*1.4
 
-        if math.isnan(inclination) and math.isnan(z_position):
+        roll,pitch,yaw = state[6:9]
+
+        if math.isnan(roll) and math.isnan(y_position) and math.isnan(pitch):
             f = 0
         else:
-            f = z_position - inclination
+            f = 2*(y_position - 1.2*(abs(roll) + abs(pitch)))
 
-        print("-------------------------Rewards-----------------------------------")
-        print("Inclination: ", inclination)
-        print("Z position: ", z_position)
+        self.fallen = self.hasFallen(state)
 
-        print("f = ", f)
+        if self.fallen:
+            f = -10
+        elif self.timeout > 199 and not self.fallen:
+            f = 10
+
+        #print("-------------------------Rewards--------------------------------")
+        #print("Timestep: ", self.timeout)
+        #print("")
+        #print("Roll: ", roll)
+        #print("Pitch: ", pitch)
+        #print("Y position: ", y_position)
+
+        #print("f = ", f)
+        #print("----------------------------------------------------------------")
 
         return f
 
-    def _is_done(self, obs):
-        return False
+    def _is_done(self, state):
+        if self.timeout >= 200:
+            return True
+        else:
+            return self.fallen
+
+    def hasFallen(self, state):
+        if state[1] < 0.165 and (abs(state[6])>0.3 or abs(state[7])>0.3):
+            print("=====================================================")
+            print("OOPS! I FELL")
+            print("=====================================================")
+            return True
+        else:
+            return False
+
+    def reset(self):
+        self.exit = self.robot.step(self.robot.timeStep)
+        time.sleep(0.1)
+        self.robot.simulationReset()
 
     def getExit(self):
         return self.exit

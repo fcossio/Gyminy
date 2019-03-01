@@ -32,17 +32,18 @@ class Nao (Supervisor):
 
     def getPos(self):
         p = self.gps.getValues()
-        print('----------gps----------')
-        print('position: [ x y z ] = [%f %f %f]' % (p[0], p[1], p[2]))
+        #print('----------gps----------')
+        #print('position: [ x y z ] = [%f %f %f]' % (p[0], p[1], p[2]))
         return p[0], p[1], p[2]
 
     # the InertialUnit roll/pitch angles are equal to naoqi's AngleX/AngleY
     def getRPY(self):
+        rpy = [0, 0, 0]
         rpy_real = self.inertialUnit.getRollPitchYaw()
         min = -3.14
         max = 3.14
-        rpy[0] = ((vel_real[0] - min)/(max-min)) * 2 - 1
-        rpy[1] = ((vel_real[1] - min)/(max-min)) * 2 - 1
+        rpy[0] = ((rpy_real[0] - min)/(max-min)) * 2 - 1
+        rpy[1] = ((rpy_real[1] - min)/(max-min)) * 2 - 1
         return rpy[0], rpy[1], rpy[2]
 
     def getFootSensors(self):
@@ -65,19 +66,19 @@ class Nao (Supervisor):
         r.append(fsv[1][2] / 3.4 - 1.5 * fsv[1][0] - 1.15 * fsv[1][1]) # Right Foot Rear Right
         r.append(fsv[1][2] / 3.4 - 1.5 * fsv[1][0] + 1.15 * fsv[1][1]) # Right Foot Rear Left
         for i in range(0, len(l)):
-            min = 0
-            max = 25
-            l[i] = max(min(l[i], 25), 0)
+            mi = 0
+            ma = 25
+            l[i] = max(min(l[i], ma), mi)
             #newtonsLeft += l[i]
-            l[i] = ((l[i] - min)/(max-min)) * 2 - 1
-            r[i] = max(min(r[i], 25), 0)
+            l[i] = ((l[i] - mi)/(ma-mi))
+            r[i] = max(min(r[i], ma), mi)
             #newtonsRight += r[i]
-            r[i] = ((r[i] - min)/(max-min)) * 2 - 1
+            r[i] = ((r[i] - mi)/(ma-mi))
 
         #print('total: %f Newtons, %f kilograms' % ((newtonsLeft + newtonsRight), ((newtonsLeft + newtonsRight)/9.81)))
         return l, r
 
-    def printFootBumpers(self):
+    def getFootBumpers(self):
         ll = self.lfootlbumper.getValue()
         lr = self.lfootrbumper.getValue()
         rl = self.rfootlbumper.getValue()
@@ -87,9 +88,14 @@ class Nao (Supervisor):
 
     def getUltrasoundSensors(self):
         dist = []
+        min = 0
+        max = 2.55
         for i in range(0, len(self.us)):
-            dist.append(self.us[i].getValue())
+            d_real = self.us[i].getValue()
+            d = ((d_real - min)/(max-min))
+            dist.append(d)
         return dist[0], dist[1]
+
 
     def printCameraImage(self, camera):
         scaled = 2 # defines by which factor the image is subsampled
@@ -143,20 +149,20 @@ class Nao (Supervisor):
         # camera
         self.cameraTop = self.getCamera("CameraTop")
         self.cameraBottom = self.getCamera("CameraBottom")
-        self.cameraTop.enable(4 * self.timeStep)
-        self.cameraBottom.enable(4 * self.timeStep)
+        self.cameraTop.enable(self.timeStep)
+        self.cameraBottom.enable(self.timeStep)
 
         # accelerometer
         self.accelerometer = self.getAccelerometer('accelerometer')
-        self.accelerometer.enable(4 * self.timeStep)
+        self.accelerometer.enable(self.timeStep)
 
         # gyro
         self.gyro = self.getGyro('gyro')
-        self.gyro.enable(4 * self.timeStep)
+        self.gyro.enable(self.timeStep)
 
         # gps
         self.gps = self.getGPS('gps')
-        self.gps.enable(4 * self.timeStep)
+        self.gps.enable(self.timeStep)
 
         # inertial unit
         self.inertialUnit = self.getInertialUnit('inertial unit')
@@ -243,6 +249,23 @@ class Nao (Supervisor):
             max = self.motorLimits[m][1]
             pos = ((real_pos - min) / (max-min) ) * 2 - 1
             readings.append(pos)
+        return readings
+
+    def getAllReadings(self):
+        readings = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        readings[0:2] = self.getAcceleration()
+        readings[3:4] = self.getGyroscope()
+        rpy1,rpy2,rpy3= self.getRPY()
+        readings[5] = rpy1
+        readings[6] = rpy2
+        l,r = self.getFootSensors()
+        readings[7:10] = l
+        readings[11:14] = r
+        readings[15:18] = self.getFootBumpers()
+        readings[19:20] = self.getUltrasoundSensors()
+        motors = self.readMotorPosition()
+        for m in motors:
+            readings.append(m)
         return readings
 
     def __init__(self):

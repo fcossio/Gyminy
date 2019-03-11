@@ -4,7 +4,7 @@ from controller import Supervisor, Accelerometer, Camera, DistanceSensor, \
 #import numpy as np
 
 # this is the main class
-class Nao (Supervisor):
+class Nao(Supervisor):
     PHALANX_MAX = 8
 
     # the accelerometer axes are oriented as on the real robot
@@ -124,8 +124,12 @@ class Nao (Supervisor):
 
     def setJointPositions(self, positions):
         #expects positions in range [-1,1] sets positions in MotorLimits
-        for motor, pos in positions.iteritems():
+        for motor, pos in positions.items():
             min,max = self.motorLimits[motor]
+            if min > 0:
+                min = min - 0.00001
+            if max > 0:
+                max = max - 0.00001
             real_pos = ((pos + 1) / 2) * (max - min) + min
             self.getMotor(motor).setPosition(real_pos)
 

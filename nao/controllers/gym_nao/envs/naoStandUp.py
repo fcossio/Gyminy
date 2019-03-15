@@ -13,11 +13,14 @@ class NaoStandUpEnv(gym.Env):
 
     def __init__(self):
         self.robot = Nao()
-
+        self.freeze_upper_body = True
         self.exit = 0
-        self.motors = list(self.robot.motorLimits.keys())
+        self.motors = self.robot.motor_names
 
-        high = np.ones([len(self.motors)])
+        if self.freeze_upper_body:
+            high = np.ones([12])
+        else:
+            high = np.ones([24])
         self.action_space = spaces.Box(-high, high)
         high = np.inf*np.ones([58])
         self.observation_space = spaces.Box(-high, high)
@@ -44,10 +47,16 @@ class NaoStandUpEnv(gym.Env):
 
         self.timeout += 1
         jointPositions = dict()
-
+        defase = 0
         for j in range(len(self.motors)):
-            #print(type(action[j]))
-            jointPositions[self.motors[j]] = action[j]
+            if ( 7 <= j and j <= 14 ) or (20 <= j and j <= 27): #is a Phalanx. No action taken
+                jointPositions[self.motors[j]] = -1.0
+                defase +=1
+            elif self.freeze_upper_body and j < 27: #freeze upper body
+                jointPositions[self.motors[j]] = 0.0
+                defase +=1
+            else:
+                jointPositions[self.motors[j]] = action[j-defase]
 
         self.robot.setJointPositions(jointPositions)
         readings = self.robot.getAllReadings()

@@ -10,8 +10,8 @@ from stable_baselines.common.vec_env import DummyVecEnv, SubprocVecEnv
 from stable_baselines.common import set_global_seeds
 from stable_baselines import ACKTR, PPO2
 
-new_model=False
-episodes = 10000
+new_model = True
+episodes = 5000
 load_path="PPO2_Balance"
 tensorboard_path = "Balance"
 

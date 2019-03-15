@@ -116,8 +116,10 @@ class NaoStandUpEnv(gym.Env):
         self.node.resetPhysics()
         #self.exit = self.robot.step(self.robot.timeStep)
 
-        self.translation.setSFVec3f(self.init_translation)
-        self.rotation.setSFRotation(self.init_rotation)
+        self.robot.resetRobotPosition()
+        for i in range(15):
+            self.exit = self.robot.step(self.robot.timeStep)
+            
         self.timeout = 0
 
         #self.node.resetPhysics()

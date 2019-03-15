@@ -25,26 +25,26 @@ print("Finished Learning!")
 
 model.save("PPO2_Balance")
 
-for i in range(episodes):
-
-    obs = env.reset()
-    done = False
-    score = 0
-    j = 0
-
-    while done is False:
-        j += 1
-
-        action,_states = model.predict(obs)
-        obs,reward,done,_ = env.step(action)
-
-        print("Timestep: ", j, "     Reward: ", reward)
-
-        score += reward
-
-        #time.sleep(0.01)
-
-    print("==========================================================")
-    print("Episode ", i, " Terminated!")
-    print("Total Score = ", score)
-    print("Average Reward = ", score/i)
+# for i in range(episodes):
+#
+#     obs = env.reset()
+#     done = False
+#     score = 0
+#     j = 0
+#
+#     while done is False:
+#         j += 1
+#
+#         action,_states = model.predict(obs)
+#         obs,reward,done,_ = env.step(action)
+#
+#         print("Timestep: ", j, "     Reward: ", reward)
+#
+#         score += reward
+#
+#         #time.sleep(0.01)
+#
+#     print("==========================================================")
+#     print("Episode ", i, " Terminated!")
+#     print("Total Score = ", score)
+#     print("Average Reward = ", score/i)

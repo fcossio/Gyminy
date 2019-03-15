@@ -1,6 +1,6 @@
 from controller import Supervisor, Accelerometer, Camera, DistanceSensor, \
                        GPS, Gyro, InertialUnit, Keyboard, LED, Motion, \
-                       Motor, TouchSensor
+                       Motor, TouchSensor, Node, Field
 #import numpy as np
 
 # this is the main class
@@ -272,6 +272,22 @@ class Nao(Supervisor):
             readings.append(m)
         return readings
 
+    def resetRobotPosition(self):
+        Field.setSFVec3f(self.trans_field, self.INITIAL_TRANS)
+        Field.setSFRotation(self.rot_field, self.INITIAL_ROT)
+        tempZip = zip(self.motor_names, self.INITIAL_MOTOR_POS)
+        jointPositions = dict(tempZip)
+        #print(jointPositions)
+        self.setJointPositions(jointPositions)
+        #for i in range(20):
+        #    self.step(self.timeStep)
+        #wb_supervisor_simulation_reset_physics
+        Supervisor.simulationResetPhysics(self)
+        #print('-------------------------------------')
+        #print('>>>>>>Robot pos has been reset<<<<<<')
+        #print('-------------------------------------')
+        return True
+
     def __init__(self):
         Supervisor.__init__(self)
         self.currentlyPlaying = False
@@ -281,3 +297,22 @@ class Nao(Supervisor):
         # get motors and its limits:
         self.motorLimits = self.getMotorsLimits()
         self.motorSensorsNames = self.getMotorSensorsNames()
+        self.robot_node = Supervisor.getSelf(self)
+        self.trans_field = Node.getField(self.robot_node,'translation')
+        self.rot_field = Node.getField(self.robot_node,'rotation')
+        self.INITIAL_TRANS = Field.getSFVec3f(self.trans_field)
+        self.INITIAL_ROT = Field.getSFRotation(self.rot_field)
+        self.motor_names = list(self.motorLimits.keys())
+        self.INITIAL_MOTOR_POS = [0.0, 0.13235322780693037, 2.526772244770825e-07, 0.6170214841012966,
+                                    7.87480087804937e-08, -0.9999997656175424, -3.43941389813196e-08,
+                                    -1.0000000000427427, -0.9999999999211575, -0.9999999999638509,
+                                    -1.000000000042741, -0.9999999999211671, -0.9999999999638511,
+                                    -0.9999999998537995, -0.9999999999785423, 2.526772246991271e-07,
+                                    -0.6170214841012985, -7.874800633800305e-08, 0.9999997656175383,
+                                     3.439413931438651e-08, -1.0000000000427374, -0.9999999999211602,
+                                     -0.9999999999638491, -1.0000000000427374, -0.9999999999211557,
+                                      -0.9999999999638578, -0.9999999998538197, -0.999999999978527,
+                                      0.2145119043096786, 0.24301964078385496, 0.571273757030849,
+                                       -0.916251677244959, 0.12004545085376028, 0.31797875510549756,
+                                       0.2145119043096937, -0.3513340801674597, 0.5712737570308948,
+                                       -0.9162516772449107, 0.12635196279599792, -0.3180461373172483]

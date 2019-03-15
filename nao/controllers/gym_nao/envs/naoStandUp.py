@@ -108,34 +108,36 @@ class NaoStandUpEnv(gym.Env):
         else:
             return False
 
-    def reset(self):
+    def reset(self, master=False):
+        if master:
+            self.robot.simulationReset()
+        else:
+            for i in range(100):
+                self.exit = self.robot.step(self.robot.timeStep)
 
-        for i in range(100):
-            self.exit = self.robot.step(self.robot.timeStep)
+            self.node.resetPhysics()
+            #self.exit = self.robot.step(self.robot.timeStep)
 
-        self.node.resetPhysics()
-        #self.exit = self.robot.step(self.robot.timeStep)
+            self.robot.resetRobotPosition()
+            for i in range(15):
+                self.exit = self.robot.step(self.robot.timeStep)
 
-        self.robot.resetRobotPosition()
-        for i in range(15):
-            self.exit = self.robot.step(self.robot.timeStep)
-            
-        self.timeout = 0
+            self.timeout = 0
 
-        #self.node.resetPhysics()
-        self.robot.simulationResetPhysics()
+            #self.node.resetPhysics()
+            self.robot.simulationResetPhysics()
 
-        readings = self.robot.getAllReadings()
-        ax,ay,az = readings[0:3]
-        roll,pitch = readings[5:7]
-        gyro = readings[3:5]
-        x,y,z = self.robot.getPos()
-        motor_values = readings[21:]
+            readings = self.robot.getAllReadings()
+            ax,ay,az = readings[0:3]
+            roll,pitch = readings[5:7]
+            gyro = readings[3:5]
+            x,y,z = self.robot.getPos()
+            motor_values = readings[21:]
 
-        obs = [x,y,z,ax,ay,az,roll,pitch,0,gyro[0],gyro[1]]
+            obs = [x,y,z,ax,ay,az,roll,pitch,0,gyro[0],gyro[1]]
 
-        for m in motor_values:
-            obs.append(m)
+            for m in motor_values:
+                obs.append(m)
 
         return obs
 

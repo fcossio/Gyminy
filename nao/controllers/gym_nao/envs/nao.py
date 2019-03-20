@@ -1,6 +1,6 @@
 from controller import Supervisor, Accelerometer, Camera, DistanceSensor, \
                        GPS, Gyro, InertialUnit, Keyboard, LED, Motion, \
-                       Motor, TouchSensor
+                       Motor, TouchSensor, Node, Field
 #import numpy as np
 
 # this is the main class
@@ -268,9 +268,26 @@ class Nao(Supervisor):
         readings[15:18] = self.getFootBumpers()
         readings[19:20] = self.getUltrasoundSensors()
         motors = self.readMotorPosition()
+        #print(motors)
         for m in motors:
             readings.append(m)
         return readings
+
+    def resetRobotPosition(self):
+        #tempZip = zip(self.motor_names, self.INITIAL_MOTOR_POS)
+        #jointPositions = dict(tempZip)
+        self.setJointPositions(self.INITIAL_MOTOR_POS)
+        for i in range(50):
+            self.step(self.timeStep)
+        Field.setSFVec3f(self.trans_field, self.INITIAL_TRANS)
+        Field.setSFRotation(self.rot_field, self.INITIAL_ROT)
+        #print(jointPositions)
+        #wb_supervisor_simulation_reset_physics
+        Supervisor.simulationResetPhysics(self)
+        #print('-------------------------------------')
+        #print('>>>>>>Robot pos has been reset<<<<<<')
+        #print('-------------------------------------')
+        return True
 
     def __init__(self):
         Supervisor.__init__(self)
@@ -281,3 +298,51 @@ class Nao(Supervisor):
         # get motors and its limits:
         self.motorLimits = self.getMotorsLimits()
         self.motorSensorsNames = self.getMotorSensorsNames()
+        self.robot_node = Supervisor.getSelf(self)
+        self.trans_field = Node.getField(self.robot_node,'translation')
+        self.rot_field = Node.getField(self.robot_node,'rotation')
+        # self.INITIAL_TRANS = Field.getSFVec3f(self.trans_field)
+        # self.INITIAL_ROT = Field.getSFRotation(self.rot_field)
+        self.INITIAL_TRANS = [5.11799e-05, 0.333114, 1.22678e-06]
+        self.INITIAL_ROT = [-1, 7.75862e-05, -7.75862e-05, 1.5708]
+        self.motor_names = list(self.motorLimits.keys())
+        self.INITIAL_MOTOR_POS = {'HeadYaw': 0.0,
+                                'HeadPitch': 0.13235322780693037,
+                                'RShoulderPitch': 0.8,
+                                'RShoulderRoll': 0.5,
+                                'RElbowYaw': 0.8,
+                                'RElbowRoll': 0.8,
+                                'RWristYaw': -3.43941389813196e-08,
+                                'RPhalanx1': -1.0,
+                                'RPhalanx2': -1.0,
+                                'RPhalanx3': -1.0,
+                                'RPhalanx4': -1.0,
+                                'RPhalanx5': -1.0,
+                                'RPhalanx6': -1.0,
+                                'RPhalanx7': -1.0,
+                                'RPhalanx8': -1.0,
+                                'LShoulderPitch': 0.8,
+                                'LShoulderRoll': -0.5,
+                                'LElbowYaw': -0.8,
+                                'LElbowRoll': -0.8,
+                                'LWristYaw': 0.0,
+                                'LPhalanx1': -1.0,
+                                'LPhalanx2': -1.0,
+                                'LPhalanx3': -1.0,
+                                'LPhalanx4': -1.0,
+                                'LPhalanx5': -1.0,
+                                'LPhalanx6': -1.0,
+                                'LPhalanx7': -1.0,
+                                'LPhalanx8': -1.0,
+                                'RHipYawPitch': 0.25,
+                                'RHipRoll': 0.25,
+                                'RHipPitch': 0.5,
+                                'RKneePitch': -0.8,
+                                'RAnklePitch': 0.1,
+                                'RAnkleRoll': 0.4,
+                                'LHipYawPitch': 0.25,
+                                'LHipRoll': -0.25,
+                                'LHipPitch': 0.5,
+                                'LKneePitch': -0.8,
+                                'LAnklePitch': 0.1,
+                                'LAnkleRoll': -0.4}

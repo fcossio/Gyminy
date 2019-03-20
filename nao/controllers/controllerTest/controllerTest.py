@@ -10,7 +10,7 @@ from stable_baselines.common.vec_env import DummyVecEnv, SubprocVecEnv
 from stable_baselines.common import set_global_seeds
 from stable_baselines import ACKTR, PPO2
 
-new_model = True
+new_model = False
 episodes = 5000
 load_path="PPO2_Balance"
 tensorboard_path = "Balance"
@@ -20,8 +20,10 @@ env = DummyVecEnv([lambda : env])
 
 
 if new_model:
-    model = PPO2(MlpPolicy, env, verbose=1)
+    print('Creating new model')
+    model = PPO2(MlpPolicy, env, verbose=1, tensorboard_log = tensorboard_path)
 else:
+    print('Loading Model ' + load_path)
     model = PPO2.load(load_path, env, verbose=0, tensorboard_log = tensorboard_path)
 
 
@@ -33,7 +35,7 @@ print("Finished Learning!")
 
 model.save(load_path)
 
-env.reset(master=True)
+env.reset()
 
 # for i in range(episodes):
 #

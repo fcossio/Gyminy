@@ -10,21 +10,24 @@ from stable_baselines.common.vec_env import DummyVecEnv, SubprocVecEnv
 from stable_baselines.common import set_global_seeds
 from stable_baselines import ACKTR, PPO2
 
+from controller import Supervisor, Robot
 new_model = False
-episodes = 5000
+episodes = 1000
 load_path="PPO2_Balance"
 tensorboard_path = "Balance"
 
 env = gym.make('gym_nao_standUp-v0')
-env = DummyVecEnv([lambda : env])
+envVec = DummyVecEnv([lambda : env])
 
 
 if new_model:
     print('Creating new model')
-    model = PPO2(MlpPolicy, env, verbose=1, tensorboard_log = tensorboard_path)
+    model = PPO2(MlpPolicy, envVec, verbose=1, tensorboard_log = tensorboard_path)
 else:
     print('Loading Model ' + load_path)
-    model = PPO2.load(load_path, env, verbose=0, tensorboard_log = tensorboard_path)
+    model = PPO2.load(load_path, envVec, verbose=0, tensorboard_log = tensorboard_path)
+
+
 
 
 print("Learning...")
@@ -35,7 +38,7 @@ print("Finished Learning!")
 
 model.save(load_path)
 
-env.reset()
+env.reset(master = True)
 
 # for i in range(episodes):
 #

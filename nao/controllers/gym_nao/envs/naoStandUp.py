@@ -73,13 +73,23 @@ class NaoStandUpEnv(gym.Env):
     def _get_reward(self, state):
         x,y,z = self.robot.getPos()
         y_position = y
+        motors= state[49:]
+        joints_at_limit_discount = 0
+        for m in motors:
+            if abs(m)>0.98:
+                joints_at_limit_discount += 0.5
+            else:
+                joints_at_limit_discount += (m*m*m*m)/5
 
+        joints_at_limit_discount /= 5
+        print('joints limit discount' + str(joints_at_limit_discount/5))
+        # print('Ankles: R=' + str(RAnklePitch) + ' L=' + str(LAnklePitch))
         roll,pitch = state[5:7]
 
         if math.isnan(roll) and math.isnan(y_position) and math.isnan(pitch):
             f = 0
         else:
-            f = 2*(1.5 * y + x - 1.2*(abs(roll) + abs(pitch)))
+            f = 2*(1.5 * y + x - 1.2*(abs(roll) + abs(pitch)))-joints_at_limit_discount
         self.fallen = self.hasFallen(y, roll, pitch)
 
         if self.fallen:

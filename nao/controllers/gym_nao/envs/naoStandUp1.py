@@ -49,7 +49,7 @@ class NaoStandUp1Env(gym.Env):
         else:
             high = np.ones([24])
         self.action_space = spaces.Box(-high, high)
-        high = np.inf*np.ones([68])
+        high = np.inf*np.ones([69])
         self.observation_space = spaces.Box(-high, high)
 
         self.node = self.robot.getSelf()
@@ -106,17 +106,16 @@ class NaoStandUp1Env(gym.Env):
         for i in range(5):
             self.exit = self.robot.step(self.robot.timeStep)
 
-        readings = [self.timeout]
-        readings = [readings,self.robot.getAllReadings()]
+        readings = self.robot.getAllReadings()
+
         ax,ay,az = readings[0:3]
         roll,pitch = readings[5:7]
         gyro = readings[3:5]
         x,y,z = self.robot.getPos()
         motor_values = readings[21:]
 
+        readings.append(self.timeout)
         obs = readings
-
-        print(obs)
 
         self.timeout += 1
 
@@ -138,7 +137,7 @@ class NaoStandUp1Env(gym.Env):
         #pitch+roll discount
         pitch_roll_discount = abs(pitch) + abs(roll)
 
-        test = np.sum(np.power(np.subtract(list(self.robot.LEFT_STEP.values()),state[28:]),2))
+        test = np.sum(np.power(np.subtract(list(self.robot.LEFT_STEP.values()),state[28:68]),2))
         pose_discount = math.exp(-test)
 
         #motor_discount = (np.sum(np.abs(np.subtract(action, list(self.previous_action.values())[28:])))/12)
@@ -232,6 +231,7 @@ class NaoStandUp1Env(gym.Env):
         gyro = readings[3:5]
         x,y,z = self.robot.getPos()
         motor_values = readings[21:]
+        readings.append(self.timeout)
         obs = readings
         return obs
 

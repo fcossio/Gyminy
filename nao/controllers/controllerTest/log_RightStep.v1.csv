@@ -1,0 +1,2 @@
+Time,TrainedTimesteps,mean_reward,net_arch,learning_rate,n_steps,noptepochs
+Wed Jun  5 13:03:03 2019,0,0.00025,|[256, 64, 32]|,128,15

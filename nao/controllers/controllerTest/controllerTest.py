@@ -45,13 +45,13 @@ def evaluate(model, num_steps=512):
     return mean_reward
 
 
-experiment_name = "LeftStep"
-experiment_version = "2"
+experiment_name = "RightStep"
+experiment_version = "1"
 log_path = "log_"+ experiment_name + ".v" + experiment_version +".csv"
 env_id = 'gym_nao_standUp-v1'
 save_path = experiment_name + ".v" + experiment_version + ".plk"
 tensorboard_path = "../tensorboards/" + experiment_name + ".v" + experiment_version
-new_model = False
+new_model = True
 n_timesteps = 500000
 batch_n_timesteps = 2048
 n_steps = 128

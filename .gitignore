@@ -3,3 +3,9 @@ tensorboards/
 *.pkl
 *.pyc
 *.pyo
+
+*.csv
+
+*.plk
+
+nao/worlds/

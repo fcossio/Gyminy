@@ -76,7 +76,7 @@ class NaoStandUp1Env(gym.Env):
                 defase += 1
             else:
                 self.jointPositions[self.motors[j]] = action[j-defase]
-            #self.robot.setJointPositions(self.jointPositions)
+            self.robot.setJointPositions(self.jointPositions)
 
         now = self.robot.getTime()
         if self.timeout == 0:
@@ -140,21 +140,12 @@ class NaoStandUp1Env(gym.Env):
         test = np.sum(np.power(np.subtract(list(self.robot.LEFT_STEP.values()),state[28:68]),2))
         pose_discount = math.exp(-test)
 
-        #motor_discount = (np.sum(np.abs(np.subtract(action, list(self.previous_action.values())[28:])))/12)
-
-        #left_foot = -0.5
-        #right_foot = -0.5
-
-        #if abs(state[7]-state[10])<0.2 and abs(state[8]-state[9])<0.2 and abs(state[7]-state[9])<0.2 and abs(state[8]-state[10])<0.2:
-        #    left_foot = 2*sum(state[7:10])
-
-        #if abs(state[11]-state[14])<0.2 and abs(state[12]-state[13])<0.2 and abs(state[11]-state[13])<0.2 and abs(state[12]-state[14])<0.2:
-        #    right_foot = 2*sum(state[11:14])
+        forward_discount = math.exp(math.pow(x-(0.4+self.robot.INITIAL_TRANS[0]),2) * -2)
 
         if math.isnan(roll) and math.isnan(y_position) and math.isnan(pitch):
             f = 0
         else:
-            f = -0.1*torque_discount + 0.3*height_discount + 0.5*pose_discount + 0.1*x
+            f = -0.1*torque_discount + 0.3*height_discount + 0.6*pose_discount + 0.1*forward_discount
 
         self.fallen = self.hasFallen(y, roll, pitch)
 

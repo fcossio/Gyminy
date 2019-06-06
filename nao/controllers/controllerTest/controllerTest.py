@@ -45,19 +45,19 @@ def evaluate(model, num_steps=512):
     return mean_reward
 
 
-experiment_name = "RightStep"
-experiment_version = "2"
+experiment_name = "keyframes"
+experiment_version = "0"
 log_path = "log_"+ experiment_name + ".v" + experiment_version +".csv"
 env_id = 'gym_nao_standUp-v1'
 save_path = experiment_name + ".v" + experiment_version + ".plk"
 tensorboard_path = "../tensorboards/" + experiment_name + ".v" + experiment_version
 new_model = False
-n_timesteps = 500000
+n_timesteps = 1000000
 batch_n_timesteps = 2048
 n_steps = 128
 learning_rate = 0.00025
 activation_function = tf.nn.relu
-net_arch = [256,64,32]
+net_arch = [512,256,64]
 noptepochs = 15
 env = gym.make(env_id)
 envVec = DummyVecEnv([lambda : env])

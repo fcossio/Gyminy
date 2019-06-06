@@ -1,6 +1,6 @@
 from controller import Supervisor, Accelerometer, Camera, DistanceSensor, \
                        GPS, Gyro, InertialUnit, Keyboard, LED, Motion, \
-                       Motor, TouchSensor, Node, Field
+                       Motor, TouchSensor, Node, Field, Display
 import numpy as np
 
 # this is the main class
@@ -318,6 +318,20 @@ class Nao(Supervisor):
     def getRobotPosition(self):
         return self.sup.getPosition()
 
+    def init_display(self):
+        w = self.display.getWidth()
+        h = self.display.getHeight()
+        self.display.setColor(0xFFFFFF)
+        self.display.fillRectangle(0, 0, w, h)
+    def display_write(self,row,text):
+        w = self.display.getWidth()
+        h = self.display.getHeight()
+        self.display.setColor(0xFFFFFF)
+        self.display.fillRectangle(0, int(h/4*row), w, int(h/4))
+        self.display.setColor(0x0)
+        self.display.setFont("Arial", int(h/4)-5, False)
+        self.display.drawText(text, 2, int(row*h/4)+1)
+
     def __init__(self):
         Supervisor.__init__(self)
         self.currentlyPlaying = False
@@ -330,6 +344,8 @@ class Nao(Supervisor):
         self.motorLimits = self.getMotorsLimits()
         self.motorSensorsNames = self.getMotorSensorsNames()
         self.robot_node = Supervisor.getSelf(self)
+        self.display = self.getDisplay("ClockDisplay")
+        self.init_display()
         self.trans_field = Node.getField(self.robot_node,'translation')
         self.rot_field = Node.getField(self.robot_node,'rotation')
         # self.INITIAL_TRANS = Field.getSFVec3f(self.trans_field)

@@ -49,7 +49,7 @@ class NaoStandUp1Env(gym.Env):
         else:
             high = np.ones([24])
         self.action_space = spaces.Box(-high, high)
-        high = np.inf*np.ones([69])
+        high = np.inf*np.ones([70])
         self.observation_space = spaces.Box(-high, high)
 
         self.node = self.robot.getSelf()
@@ -114,12 +114,19 @@ class NaoStandUp1Env(gym.Env):
         x,y,z = self.robot.getPos()
         motor_values = readings[21:]
 
-        readings.append(self.timeout)
-        obs = readings
+        readings.append(self._clock())
+        readings.append(0)
+        if self._clock() >= 0.5:
+            readings[-1]=0
 
+        self.robot.display_write(1,"Time: " + str(self.timeout/10))
+        self.robot.display_write(2,"Clock: " + str(self._clock()))
+        obs = readings
+        reward =self._get_reward(obs, action)
+        self.robot.display_write(0,"R: " + str(reward))
         self.timeout += 1
 
-        return obs, self._get_reward(obs, action), self._is_done(obs), dict()
+        return obs, reward, self._is_done(obs), dict()
 
     def _get_reward(self, state, action):
         x,y,z = self.robot.getPos()
@@ -137,15 +144,28 @@ class NaoStandUp1Env(gym.Env):
         #pitch+roll discount
         pitch_roll_discount = abs(pitch) + abs(roll)
 
-        test = np.sum(np.power(np.subtract(list(self.robot.LEFT_STEP.values()),state[28:68]),2))
-        pose_discount = math.exp(-test)
+        right_step_pose_delta=np.exp(-np.sum(np.power(np.subtract(list(self.robot.RIGHT_STEP.values()),state[28:68]),2)))
+        x = self._clock()
+        if x > 0.5: #para hacer una funcion simetrica
+            x = 1 - x
+        right_step_factor = np.exp(-((x)*4)**2)
 
-        forward_discount = math.exp(math.pow(x-(0.4+self.robot.INITIAL_TRANS[0]),2) * -2)
+        left_step_pose_delta=np.exp(-np.sum(np.power(np.subtract(list(self.robot.LEFT_STEP.values()),state[28:68]),2)))
+        x = self._clock() - 0.5 #defasar medio ciclo
+        if x > 0.5:
+            x = 1 - x
+        left_step_factor = np.exp(-((x)*4)**2)
+
+        self.robot.display_write(3, 'L:%.3f R:%.3f'%(left_step_factor * left_step_pose_delta, right_step_factor * right_step_pose_delta))
+        pose_reward = (left_step_factor * left_step_pose_delta + right_step_factor * right_step_pose_delta)
+
+
+        forward_discount = math.exp(math.pow(x-(10+self.robot.INITIAL_TRANS[0]),2) * -2)
 
         if math.isnan(roll) and math.isnan(y_position) and math.isnan(pitch):
             f = 0
         else:
-            f = -0.1*torque_discount + 0.3*height_discount + 0.6*pose_discount + 0.1*forward_discount
+            f = -0.1*torque_discount + 0.3*height_discount + 0.6*pose_reward + 0.1*forward_discount
 
         self.fallen = self.hasFallen(y, roll, pitch)
 
@@ -164,6 +184,9 @@ class NaoStandUp1Env(gym.Env):
         #print("f = ", f)
         #print("----------------------------------------------------------------")
         return f
+
+    def _clock(self):
+        return self.timeout/10 % 1
 
     def _is_done(self, state):
         if self.timeout >= 50:
@@ -222,7 +245,8 @@ class NaoStandUp1Env(gym.Env):
         gyro = readings[3:5]
         x,y,z = self.robot.getPos()
         motor_values = readings[21:]
-        readings.append(self.timeout)
+        readings.append(self._clock())
+        readings.append(0)
         obs = readings
         return obs
 

@@ -648,6 +648,11 @@ PROTO Nao [
         ]
         gradual TRUE
       }
+      DEF Display Display{
+        name "ClockDisplay"
+        width 100
+        height 60
+      }
       DEF GPS GPS {
         accuracy IS gpsAccuracy
       }

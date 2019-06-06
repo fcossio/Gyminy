@@ -132,13 +132,16 @@ class NaoStandUp1Env(gym.Env):
         x,y,z = self.robot.getPos()
         y_position = y
         roll,pitch = state[5:7]
-        #accel = state[0:4]
-        #y_accel = (abs(accel[1]-1)*2)**2
+        accel = state[0:3]
+        y_accel = math.pow(abs(accel[1]-9.81), 1)
+        #print("Discount: ", accel)
+
         #torque discount
         torque_discount = 0
         for t in self.torques.values():
             torque_discount += abs(t)
         torque_discount /= 60
+
         #height discount
         height_discount = math.exp(math.pow(0.333-y,2) * -5)
         #pitch+roll discount
@@ -149,6 +152,15 @@ class NaoStandUp1Env(gym.Env):
         if x > 0.5: #para hacer una funcion simetrica
             x = 1 - x
         right_step_factor = np.exp(-((x)*4)**2)
+        clock = self.timeout/10 % 1
+
+        if(clock>=0.5):
+            test = np.sum(np.power(np.subtract(list(self.robot.LEFT_STEP.values()),state[28:68]),2))
+            
+        else:
+            test = np.sum(np.power(np.subtract(list(self.robot.RIGHT_STEP.values()),state[28:68]),2))
+
+        pose_discount = math.exp(-test)
 
         left_step_pose_delta=np.exp(-np.sum(np.power(np.subtract(list(self.robot.LEFT_STEP.values()),state[28:68]),2)))
         x = self._clock() - 0.5 #defasar medio ciclo

@@ -281,7 +281,7 @@ class Nao(Supervisor):
         readings[15:18] = self.getFootBumpers()
         readings[19:20] = self.getUltrasoundSensors()
         motors = self.readMotorPosition()
-        #print(motors)
+        #print(self.robot_node.getCenterOfMass())
         for m in motors:
             readings.append(m)
         return readings

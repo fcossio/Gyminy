@@ -7,9 +7,10 @@ from datetime import timedelta
 import time
 import csv
 import numpy as np
-from stable_baselines.common.policies import MlpPolicy
+from stable_baselines.ddpg.policies import MlpPolicy
 from stable_baselines.common.vec_env import DummyVecEnv
-from stable_baselines import PPO2
+#from stable_baselines.ddpg.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise, AdaptiveParamNoiseSpec
+from stable_baselines import DDPG
 
 import tensorflow as tf
 
@@ -45,7 +46,7 @@ def evaluate(model, num_steps=512):
     return mean_reward
 
 
-experiment_name = "Rise"
+experiment_name = "RiseDDPG"
 experiment_version = "1"
 log_path = "log_"+ experiment_name + ".v" + experiment_version +".csv"
 env_id = 'gym_nao_standUp-v1'
@@ -62,6 +63,10 @@ noptepochs = 15
 env = gym.make(env_id)
 envVec = DummyVecEnv([lambda : env])
 
+n_actions = env.action_space.shape[-1]
+param_noise = None
+#action_noise = OrnsteinUhlenbeckActionNoise(mean=np.zeros(n_actions), sigma=float(0.5)*np.ones(n_actions))
+
 def getTrainedTimesteps():
     with open(log_path,"r") as f:
         reader = csv.reader(f,delimiter = ",")
@@ -77,12 +82,13 @@ if new_model:
         writer.writerow(row)
     print('Creating new model' + save_path)
     policy_kwargs = dict(act_fun=activation_function, net_arch = net_arch)
-    model = PPO2(MlpPolicy, envVec, policy_kwargs=policy_kwargs,
-        learning_rate = learning_rate, cliprange = 0.1, nminibatches = 1, noptepochs = noptepochs, n_steps=n_steps,
+    model = DDPG(MlpPolicy, envVec,
+        param_noise=param_noise, action_noise=None,
+        batch_size=16, actor_lr=learning_rate,
         verbose=0, tensorboard_log = tensorboard_path)
 else:
     print('Loading Model ' + save_path)
-    model = PPO2.load(save_path, envVec, verbose=0, tensorboard_log = tensorboard_path)
+    model = DDPG.load(save_path, envVec, verbose=0, tensorboard_log = tensorboard_path)
 
 trainedT = getTrainedTimesteps()
 print("Last trained timestep was : ", trainedT)

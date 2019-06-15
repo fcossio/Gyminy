@@ -147,54 +147,24 @@ class NaoStandUp1Env(gym.Env):
         #pitch+roll discount
         pitch_roll_discount = abs(pitch) + abs(roll)
 
-        right_step_pose_delta=np.exp(-np.sum(np.power(np.subtract(list(self.robot.RIGHT_STEP.values()),state[28:68]),2)))
-        x = self._clock()
-        if x > 0.5: #para hacer una funcion simetrica
-            x = 1 - x
-        right_step_factor = np.exp(-((x)*4)**2)
+        #right_step_pose_delta=np.exp(-np.sum(np.power(np.subtract(list(self.robot.RIGHT_STEP.values()),state[28:68]),2)))
+        #x = self._clock()
+        #if x > 0.5: #para hacer una funcion simetrica
+        #    x = 1 - x
+        #right_step_factor = np.exp(-((x)*4)**2)
         clock = self.timeout/10 % 1
+        test = np.sum(np.power(np.subtract(list(self.robot.STAND_UP.values()),state[28:68]),2))
+        pose_reward = math.exp(-test)
 
-        if(clock>=0.5):
-            test = np.sum(np.power(np.subtract(list(self.robot.LEFT_STEP.values()),state[28:68]),2))
-            
-        else:
-            test = np.sum(np.power(np.subtract(list(self.robot.RIGHT_STEP.values()),state[28:68]),2))
-
-        pose_discount = math.exp(-test)
-
-        left_step_pose_delta=np.exp(-np.sum(np.power(np.subtract(list(self.robot.LEFT_STEP.values()),state[28:68]),2)))
-        x = self._clock() - 0.5 #defasar medio ciclo
-        if x > 0.5:
-            x = 1 - x
-        left_step_factor = np.exp(-((x)*4)**2)
-
-        self.robot.display_write(3, 'L:%.3f R:%.3f'%(left_step_factor * left_step_pose_delta, right_step_factor * right_step_pose_delta))
-        pose_reward = (left_step_factor * left_step_pose_delta + right_step_factor * right_step_pose_delta)
-
-
-        forward_discount = math.exp(math.pow(x-(10+self.robot.INITIAL_TRANS[0]),2) * -2)
+        forward_discount = math.exp(math.pow(x-(2+self.robot.INITIAL_TRANS[0]),2) * -2)
 
         if math.isnan(roll) and math.isnan(y_position) and math.isnan(pitch):
             f = 0
         else:
-            f = -0.1*torque_discount + 0.3*height_discount + 0.6*pose_reward + 0.1*forward_discount
+            f = -0.1*torque_discount + 0.4*height_discount + 0.7*pose_reward
 
         self.fallen = self.hasFallen(y, roll, pitch)
 
-        #print("-------------------------Rewards--------------------------------")
-        # print("Timestep: ", self.timeout)
-        # print("")
-        # print("Roll: ", roll)
-        # print("Pitch: ", pitch)
-        # print("Y position: ", y_position)
-        #print("acceleration: " , accel)
-        # print('torque discount:', torque_discount)
-        # print('height discount:', height_discount)
-        #print('y accel discount', y_accel)
-        # print('P R discount:', pitch_roll_discount)
-        # print('distance discount', distance_discount)
-        #print("f = ", f)
-        #print("----------------------------------------------------------------")
         return f
 
     def _clock(self):

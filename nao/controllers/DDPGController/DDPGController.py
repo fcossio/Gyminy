@@ -9,7 +9,7 @@ import csv
 import numpy as np
 from stable_baselines.ddpg.policies import MlpPolicy
 from stable_baselines.common.vec_env import DummyVecEnv
-#from stable_baselines.ddpg.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise, AdaptiveParamNoiseSpec
+from stable_baselines.ddpg.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise, AdaptiveParamNoiseSpec
 from stable_baselines import DDPG
 
 import tensorflow as tf
@@ -65,7 +65,7 @@ envVec = DummyVecEnv([lambda : env])
 
 n_actions = env.action_space.shape[-1]
 param_noise = None
-#action_noise = OrnsteinUhlenbeckActionNoise(mean=np.zeros(n_actions), sigma=float(0.5)*np.ones(n_actions))
+action_noise = OrnsteinUhlenbeckActionNoise(mean=np.zeros(n_actions), sigma=float(0.5)*np.ones(n_actions))
 
 def getTrainedTimesteps():
     with open(log_path,"r") as f:
@@ -83,8 +83,8 @@ if new_model:
     print('Creating new model' + save_path)
     policy_kwargs = dict(act_fun=activation_function, net_arch = net_arch)
     model = DDPG(MlpPolicy, envVec,
-        param_noise=param_noise, action_noise=None,
-        batch_size=16, actor_lr=learning_rate,
+        param_noise=param_noise, action_noise=action_noise,
+        batch_size=4, actor_lr=learning_rate,
         verbose=0, tensorboard_log = tensorboard_path)
 else:
     print('Loading Model ' + save_path)

@@ -1,0 +1,9 @@
+for file in os.listdir(path):
+  if file.endswith(".dae"):
+    name, _ = file.split(".")
+    bpy.ops.wm.collada_import(filepath=path+"/"+file)
+    bpy.ops.export_scene.obj(filepath=path+"/"+name+".obj", use_selection=True, global_scale=0.1, axis_forward='Y', axis_up='Z')
+    bpy.ops.object.delete()
+
+
+#bpy.context.active_object.scale = ( 0.001, 0.001, 0.001 )

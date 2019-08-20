@@ -1,14 +1,20 @@
+import sys
+n_cpu = int(sys.argv[1])
+total_train_timesteps = int(sys.argv[2])
 import gym, roboschool, roboschoolfork_nao
 import tensorflow as tf
 from stable_baselines.common.policies import MlpPolicy
 from stable_baselines.common.vec_env import SubprocVecEnv
 from stable_baselines import PPO2
 from time import time
+
+
+
 # multiprocess environment
-n_cpu = 2
+
 env = SubprocVecEnv([lambda: gym.make('RoboschoolNaoForwardWalk-v1') for i in range(n_cpu)])
 initial_timestep = 0
-total_train_timesteps = 10000
+
 
 activation_function = tf.nn.tanh
 net_arch = [256,128,64]

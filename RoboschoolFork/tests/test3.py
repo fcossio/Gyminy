@@ -25,7 +25,7 @@ model = PPO2(MlpPolicy, env, verbose=1, #tensorboard_log="./ppo2_NaoForwardWalk1
    policy_kwargs=policy_kwargs)
 # model = PPO2.load("ppo2_NaoForwardWalk11jul.pkl", env = env, tensorboard_log="./ppo2_NaoForwardWalk")
 model.learn(total_timesteps=total_train_timesteps)
-model.save(str(time())".pkl")
+model.save(str(time())+".pkl")
 print("Saved")
 end_time = time()
 

@@ -55,8 +55,10 @@ def evaluate(model, num_steps=512):
     return mean_reward
 
 
-experiment_name = "keyframe"
-experiment_version = "2"
+
+experiment_name = "Rise"
+experiment_version = "1"
+
 log_path = "log_"+ experiment_name + ".v" + experiment_version +".csv"
 env_id = 'gym_nao_standUp-v1'
 save_path = experiment_name + ".v" + experiment_version + ".plk"
@@ -65,11 +67,11 @@ new_model = False
 n_timesteps = 1000000
 batch_n_timesteps = 2556
 n_steps = 128
-learning_rate = 0.0005
-decay_rate = 0.00001
-activation_function = tf.nn.relu
-net_arch = [512,254,254]
-noptepochs = 10
+learning_rate = 0.00025
+activation_function = tf.nn.tanh
+net_arch = [256,256,64]
+noptepochs = 15
+
 env = gym.make(env_id)
 envVec = DummyVecEnv([lambda : env])
 
@@ -90,8 +92,10 @@ if new_model:
     print('Creating new model' + save_path)
     policy_kwargs = dict(act_fun=activation_function, net_arch = net_arch)
     model = PPO2(MlpPolicy, envVec, policy_kwargs=policy_kwargs,
-        learning_rate = lr_func(learning_rate, decay_rate), cliprange = 0.2, nminibatches = 1, noptepochs = noptepochs, n_steps=n_steps,
-        verbose=0, tensorboard_log = tensorboard_path, new_tb_run = new_model)
+                 
+        learning_rate = learning_rate, cliprange = 0.1, nminibatches = 1, noptepochs = noptepochs, n_steps=n_steps,
+        verbose=0, tensorboard_log = tensorboard_path)
+
 else:
     print('Loading Model ' + save_path)
     trainedT = getTrainedTimesteps()

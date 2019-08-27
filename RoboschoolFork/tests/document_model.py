@@ -4,13 +4,14 @@ import time
 import matplotlib.pyplot as plt
 from gym import wrappers
 import roboschool
+import roboschoolfork_nao
 from stable_baselines import PPO2
 import imageio
 from tqdm import tqdm
 
 model_path = sys.argv[1]
 model = PPO2.load(model_path)
-env = gym.make('RoboschoolAtlasForwardWalk-v1')
+env = gym.make('RoboschoolNaoForwardWalk-v1')
 # env = wrappers.Monitor(env, './recording/' + str(time()) + '/')
 # Enjoy trained agent
 obs = env.reset()

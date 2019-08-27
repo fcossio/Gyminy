@@ -16,5 +16,11 @@ register(
     max_episode_steps=1000,
     tags={ "pg_complexity": 200*1000000 },
     )
-
+register(
+    id='NaoLLC-v1',
+    entry_point='roboschoolfork_nao.envs.gym_nao_LLC:NaoLLC',
+    max_episode_steps=1000,
+    tags={ "pg_complexity": 200*1000000 },
+    )
 from .envs.gym_nao import RoboschoolNaoForwardWalk
+from .envs.gym_nao_LLC import NaoLLC

@@ -4,7 +4,6 @@ roboschoolfork_nao.egg-info/PKG-INFO
 roboschoolfork_nao.egg-info/SOURCES.txt
 roboschoolfork_nao.egg-info/dependency_links.txt
 roboschoolfork_nao.egg-info/top_level.txt
-roboschoolfork_nao/envs/__init__.py
 roboschoolfork_nao/envs/cpp_household.so
 roboschoolfork_nao/envs/cpp_household_d.so
 roboschoolfork_nao/envs/gym_forward_walker.py

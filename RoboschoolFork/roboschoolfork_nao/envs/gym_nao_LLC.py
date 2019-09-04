@@ -17,7 +17,7 @@ class NaoLLC(LLC_RoboschoolForwardWalker, RoboschoolUrdfEnv):
         RoboschoolUrdfEnv.__init__(self,
             "nao_description/urdf/naoV50_generated_urdf/nao.urdf",
             "torso",
-            action_dim=26, obs_dim=62,
+            action_dim=26, obs_dim=63,
             fixed_base=False,
             self_collision=True)
 

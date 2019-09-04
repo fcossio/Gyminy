@@ -1,0 +1,14 @@
+{
+  "RElbow":"mixamorig_RightForeArm",
+  "LElbow":"mixamorig_LeftForeArm",
+  "RThig": "mixamorig_RightThigh",
+  "LThig": "mixamorig_LeftThigh",
+  "RTibia":"mixamorig_RightTibia",
+  "LTibia": "mixamorig_LeftTibia",
+  "r_wrist":"mixamorig_RightHand",
+  "l_wrist":"mixamorig_LeftHand",
+  "RHip":"mixamorig_RightUpLeg",
+  "LHip":"mixamorig_LeftUpLeg",
+  "r_ankle":"mixamorig_RightToeBase",
+  "l_ankle":"mixamorig_LeftToeBase"
+}

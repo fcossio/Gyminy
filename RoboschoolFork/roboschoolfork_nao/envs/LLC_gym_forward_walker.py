@@ -5,7 +5,9 @@ from .gym_mujoco_xml_env import RoboschoolMujocoXmlEnv
 import gym, gym.spaces, gym.utils, gym.utils.seeding
 import numpy as np
 import os, sys
-
+import json
+import random
+script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
 class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
     def __init__(self, power):
         self.power = power
@@ -17,7 +19,16 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.camera_y = 4.3
         self.camera_z = 45.0
         self.camera_follow = 0
-
+        self.flag = 0
+        self.phase = 0
+        with open(os.path.join(script_dir, "AnimationsProcessed.json")) as file:
+            self.animations = json.load(file)
+        for i in range(len(self.animations)):
+            for n in self.animations[i].keys():
+                self.animations[i][n] = np.array(self.animations[i][n])
+        with open(os.path.join(script_dir, "PartEquivalents.json")) as file:
+            self.equivalents = json.load(file)
+        print(self.equivalents)
     def create_single_player_scene(self):
         return SinglePlayerStadiumScene(gravity=9.8, timestep=0.0165/4, frame_skip=4)
 
@@ -48,7 +59,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         j = np.array([j.current_relative_position() for j in self.ordered_joints], dtype=np.float32)
         print("get_joints_relative_position")
         print(j)
-        input()
+        #input()
         return
 
     def calc_state(self):
@@ -60,10 +71,8 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         #input()
         self.joints_at_limit = np.count_nonzero(np.abs(j[0::2]) > 0.99)
         body_pose = self.robot_body.pose()
-        # for p in self.parts.keys():
-        #     print(p, self.parts[p].pose().xyz())
+
         parts_xyz = np.array( [p.pose().xyz() for p in self.parts.values()] ).flatten()
-        #print("parts_xyz")
         self.body_xyz = (parts_xyz[0::3].mean(), parts_xyz[1::3].mean(), body_pose.xyz()[2])  # torso z is more informative than mean z
         self.body_rpy = body_pose.rpy()
         z = self.body_xyz[2]
@@ -82,6 +91,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         vx, vy, vz = np.dot(self.rot_minus_yaw, self.robot_body.speed())  # rotate speed back to body point of view
 
         more = np.array([
+            abs(self.phase/30 - (1 - self.phase/(2*30))), #para que la red sepa en que paso va
             z-self.initial_z,
             np.sin(self.angle_to_target), np.cos(self.angle_to_target),
             0.3*vx, 0.3*vy, 0.3*vz,    # 0.3 is just scaling typical speed into -1..+1, no physical sense here
@@ -101,15 +111,50 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
     foot_ground_object_names = set(["floor"])  # to distinguish ground and other objects
     joints_at_limit_cost = -0.2    # discourage stuck joints
 
+    def appendSpherical_np(self, xyz):
+        ptsnew = np.hstack((xyz, np.zeros(xyz.shape)))
+        xy = xyz[:,0]**2 + xyz[:,1]**2
+        ptsnew[:,3] = np.sqrt(xy + xyz[:,2]**2)
+        ptsnew[:,4] = np.arctan2(np.sqrt(xy), xyz[:,2]) # for elevation angle defined from Z-axis down
+        #ptsnew[:,4] = np.arctan2(xyz[:,2], np.sqrt(xy)) # for elevation angle defined from XY-plane up
+        ptsnew[:,5] = np.arctan2(xyz[:,1], xyz[:,0])
+        return ptsnew
+
     def step(self, a):
-        # input()
-        self.get_joints_relative_position()
+        #input()
+        #self.get_joints_relative_position()
         if not self.scene.multiplayer:  # if multiplayer, action first applied to all robots, then global step() called, then step() for all robots with the same actions
             self.apply_action(a)
             self.scene.global_step()
 
         state = self.calc_state()  # also calculates self.joints_at_limit
+        self.phase = (self.phase + 1)%30
+        #print(self.phase)
+        body_pose = self.robot_body.pose()
+        self.flag=[]
+        self.flag.append(self.scene.cpp_world.debug_sphere(body_pose.xyz()[0], body_pose.xyz()[1],body_pose.xyz()[2], 0.05, 0x10FF10))
+        positions = []
+        names = []
+        for p in sorted(list(self.parts.keys())):
+            if(p in ["RElbow","LElbow","RThig","LThig","RTibia","LTibia","r_wrist","l_wrist","RHip","LHip","r_ankle","l_ankle"]):
+                self.flag.append(self.scene.cpp_world.debug_sphere(self.parts[p].pose().xyz()[0], self.parts[p].pose().xyz()[1],self.parts[p].pose().xyz()[2], 0.05, 0x10FF10))
+                relative_pose = np.array(self.parts[p].pose().xyz()) - np.array(body_pose.xyz())
+                if (self.phase%30 > 14):
+                    relative_pose[0] = relative_pose[0] * -1
+                positions.append(list(relative_pose))
+                equivalent = self.equivalents[p]
+                names.append(equivalent)
+        positions = self.appendSpherical_np(np.array(positions))
+        delta_angles = 0
+        rand_animation = random.choice(self.animations)
 
+        pose_discount = 0
+        for n in range(len(names)):
+            delta = np.power(positions[n,[4,5]] - rand_animation[names[n]][ self.phase%15 ,[4,5]], 2)
+            #print(names[n], delta)
+            delta = np.sum(delta)
+            pose_discount+=delta
+        #print(pose_discount/100)
         alive = float(self.alive_bonus(state[0]+self.initial_z, self.body_rpy[1]))   # state[0] is body height above ground, body_rpy[1] is pitch
         done = alive < 0
         if not np.isfinite(state).all():
@@ -129,21 +174,23 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             if contact_names - self.foot_ground_object_names:
                 feet_collision_cost += self.foot_collision_cost
 
-        electricity_cost  = self.electricity_cost  * float(np.abs(a*self.joint_speeds).mean())  # let's assume we have DC motor with controller, and reverse current braking
-        electricity_cost += self.stall_torque_cost * float(np.square(a).mean())
+        # electricity_cost  = self.electricity_cost  * float(np.abs(a*self.joint_speeds).mean())  # let's assume we have DC motor with controller, and reverse current braking
+        # electricity_cost += self.stall_torque_cost * float(np.square(a).mean())
 
         joints_at_limit_cost = float(self.joints_at_limit_cost * self.joints_at_limit)
 
         self.rewards = [
             alive,
             progress,
-            electricity_cost,
+            pose_discount/-100,
+            # electricity_cost,
             joints_at_limit_cost,
             feet_collision_cost
             ]
 
         self.frame  += 1
         if (done and not self.done) or self.frame==self.spec.max_episode_steps:
+            self.phase = 0
             self.episode_over(self.frame)
         self.done   += done   # 2 == 1+True
         self.reward += sum(self.rewards)

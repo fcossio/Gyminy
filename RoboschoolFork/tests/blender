@@ -7,3 +7,27 @@ for file in os.listdir(path):
 
 
 #bpy.context.active_object.scale = ( 0.001, 0.001, 0.001 )
+
+
+armature = bpy.context.scene.objects['Armature']
+
+paths = {}
+for i in range(12):
+  j=(0+i)%24
+  bpy.context.scene.frame_set(j)
+  pose = armature.pose
+  for bone in pose.bones:
+    if bone.name.endswith("Hand") or not "Hand" in bone.name:
+      if bone.name not in paths.keys():
+        paths[bone.name] = {}
+      paths[bone.name][i]=bone.head[:]
+
+import json
+print(json.dumps(paths))
+
+for i in range(20):
+  bpy.context.scene.frame_set(i)
+
+  for bone in armature.pose.bones:
+      print(bone.name)
+      bone.select = True

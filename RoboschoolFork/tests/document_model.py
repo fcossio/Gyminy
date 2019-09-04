@@ -11,7 +11,7 @@ from tqdm import tqdm
 
 model_path = sys.argv[1]
 model = PPO2.load(model_path)
-env = gym.make('RoboschoolNaoForwardWalk-v1')
+env = gym.make('NaoLLC-v1')
 # env = wrappers.Monitor(env, './recording/' + str(time()) + '/')
 # Enjoy trained agent
 obs = env.reset()

@@ -28,7 +28,6 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
                 self.animations[i][n] = np.array(self.animations[i][n])
         with open(os.path.join(script_dir, "PartEquivalents.json")) as file:
             self.equivalents = json.load(file)
-        print(self.equivalents)
     def create_single_player_scene(self):
         return SinglePlayerStadiumScene(gravity=9.8, timestep=0.0165/4, frame_skip=4)
 

@@ -12,7 +12,7 @@ from time import time
 
 # multiprocess environment
 
-env = SubprocVecEnv([lambda: gym.make('RoboschoolNaoForwardWalk-v1') for i in range(n_cpu)])
+env = SubprocVecEnv([lambda: gym.make('NaoLLC-v1') for i in range(n_cpu)])
 initial_timestep = 0
 
 

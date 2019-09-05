@@ -141,9 +141,9 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
 
         if self.phase%15 == 0:
             if self.phase >14:
-                self.rand_animation = random.choice([self.animations[0], self.animations[2], self.animations[4]])
+                self.rand_animation = random.choice([self.animations[0], self.animations[4]])
             else:
-                self.rand_animation = random.choice([self.animations[1], self.animations[3], self.animations[5]])
+                self.rand_animation = random.choice([self.animations[1], self.animations[5]])
 
         self.phase = (self.phase + 1)%30
 
@@ -218,11 +218,11 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             alive,
             progress,
             #delta = np.power(positions[n,[4,5]] - self.rand_animation[names[n]]
-            pose_discount/-20,
-            height_discount,
-            action_delta/-50,
+            pose_discount/-5,
+            #height_discount,
+            #action_delta/-50,
             # electricity_cost,
-            joints_at_limit_cost,
+            #joints_at_limit_cost,
             feet_collision_cost
             ]
 

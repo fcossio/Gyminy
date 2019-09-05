@@ -58,7 +58,7 @@ class RoboschoolUrdfEnv(gym.Env):
         self.frame = 0
         self.done = 0
         self.reward = 0
-        dump = 1
+        dump = 0
         r = self.urdf
         self.cpp_robot = r
         if dump: print("ROBOT '%s'" % r.root_part.name)

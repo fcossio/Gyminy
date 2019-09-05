@@ -7,6 +7,7 @@ import numpy as np
 import os, sys
 import json
 import random
+import math
 script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
 class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
     def __init__(self, power):
@@ -26,6 +27,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         for i in range(len(self.animations)):
             for n in self.animations[i].keys():
                 self.animations[i][n] = np.array(self.animations[i][n])
+        self.rand_animation = random.choice(self.animations)
         with open(os.path.join(script_dir, "PartEquivalents.json")) as file:
             self.equivalents = json.load(file)
     def create_single_player_scene(self):
@@ -136,7 +138,16 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             self.scene.global_step()
 
         state = self.calc_state()  # also calculates self.joints_at_limit
+
+        if self.phase%15 == 0:
+            if self.phase >14:
+                self.rand_animation = random.choice([self.animations[0], self.animations[2], self.animations[4]])
+            else:
+                self.rand_animation = random.choice([self.animations[1], self.animations[3], self.animations[5]])
+
         self.phase = (self.phase + 1)%30
+
+
         #print(self.phase)
         body_pose = self.robot_body.pose()
         self.flag=[]
@@ -145,20 +156,36 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         names = []
         for p in sorted(list(self.parts.keys())):
             if(p in ["RElbow","LElbow","RThig","LThig","RTibia","LTibia","r_wrist","l_wrist","RHip","LHip","r_ankle","l_ankle"]):
-                #self.flag.append(self.scene.cpp_world.debug_sphere(self.parts[p].pose().xyz()[0], self.parts[p].pose().xyz()[1],self.parts[p].pose().xyz()[2], 0.05, 0x10FF10))
+                # x1,y1,z1 = body_pose.xyz()
+                # x2,y2,z2 = self.parts[p].pose().xyz()
+                # balls = 10
+                # for i in range(balls):
+                #     xs2 = (x2 - x1)*i/balls + x1
+                #     ys2 = (y2 - y1)*i/balls + y1
+                #     zs2 = (z2 - z1)*i/balls + z1
+                #     self.flag.append(self.scene.cpp_world.debug_sphere(xs2, ys2, zs2, 0.01, 0x10FF10))
+                # self.flag.append(self.scene.cpp_world.debug_sphere(x2, y2, z2, 0.03, 0x10FF10))
                 relative_pose = np.array(self.parts[p].pose().xyz()) - np.array(body_pose.xyz())
-                if (self.phase%30 > 14):
-                    relative_pose[0] = relative_pose[0] * -1
+                # if (self.phase%30 > 14):
+                #     relative_pose[0] = relative_pose[0] * -1
                 positions.append(list(relative_pose))
                 equivalent = self.equivalents[p]
                 names.append(equivalent)
         positions = self.appendSpherical_np(np.array(positions))
         delta_angles = 0
-        rand_animation = random.choice(self.animations)
 
         pose_discount = 0
         for n in range(len(names)):
-            delta = np.power(positions[n,[4,5]] - rand_animation[names[n]][ self.phase%15 ,[4,5]], 2)
+            x1,y1,z1 = body_pose.xyz()
+            pos = self.polar2cart( positions[n,3] , self.rand_animation[names[n]][self.phase%15,[4]],self.rand_animation[names[n]][ self.phase%15 ,[5]])
+            # if (self.phase%30 > 14):
+            #     pos[0] *= -1
+            #     pos[1] *= -1
+            pos[0] += x1 + 0.5
+            pos[1] += y1
+            pos[2] += z1
+            self.flag.append(self.scene.cpp_world.debug_sphere(pos[0], pos[1], pos[2], 0.02, 0xFF1010))
+            delta = np.power(positions[n,[4,5]] - self.rand_animation[names[n]][ self.phase%15 ,[4,5]], 2)
             #print(names[n], delta)
             delta = np.sum(delta)
             pose_discount+=delta
@@ -190,7 +217,8 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.rewards = [
             alive,
             progress,
-            pose_discount/-100,
+            #delta = np.power(positions[n,[4,5]] - self.rand_animation[names[n]]
+            pose_discount/-20,
             height_discount,
             action_delta/-50,
             # electricity_cost,
@@ -259,3 +287,6 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         min, max = limits
         real_pos = ((relative_pos + 1) / 2) * (max - min) + min
         return real_pos
+    def polar2cart(self, r, theta, phi):
+        cart = np.array([ r * math.sin(theta) * math.cos(phi), r * math.sin(theta) * math.sin(phi), r * math.cos(theta) ])
+        return cart

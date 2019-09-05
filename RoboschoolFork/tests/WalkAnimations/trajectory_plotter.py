@@ -67,7 +67,7 @@ for filename in file_names:
         mirrorx = True
     else:
         mirrorx = False
-
+    mirrorx = False
     with open(filename,"r") as file:
         paths = json.load(file)
     paths["mixamorig_RightThigh"] = {}
@@ -92,7 +92,11 @@ for filename in file_names:
         if mirrorx:
             a[:,0] = a[:,0] * -1
         a = a - spine
+
         a[:, 1], a[:, 2] = a[:, 2], a[:, 1].copy()#swap y and z because axis are different in roboschool
+        a[:, 1] = a[:,1] * 1.3  #make everything a bit wider
+        a[:, 0], a[:, 1] = a[:, 1], a[:, 0].copy()#swap x and y because axis are different in roboschool
+
         important_paths[part_name] = list(appendSpherical_np(a).tolist())
     InterpolatedWalkAnimations.append(important_paths)
 

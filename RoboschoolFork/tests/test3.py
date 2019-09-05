@@ -17,7 +17,7 @@ initial_timestep = 0
 
 
 activation_function = tf.nn.tanh
-net_arch = [256,128,64]
+net_arch = [512,256,128,64]
 # checkpoint_timesteps = 10000
 start_time = time()
 policy_kwargs = dict(act_fun=activation_function, net_arch = net_arch)

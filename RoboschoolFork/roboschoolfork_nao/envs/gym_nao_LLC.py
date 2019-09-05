@@ -13,13 +13,13 @@ class NaoLLC(LLC_RoboschoolForwardWalker, RoboschoolUrdfEnv):
     foot_list = ["r_ankle", "l_ankle"]
 
     def __init__(self):
-        LLC_RoboschoolForwardWalker.__init__(self, power=0.3)
+        LLC_RoboschoolForwardWalker.__init__(self, power=0.6)
         RoboschoolUrdfEnv.__init__(self,
             "nao_description/urdf/naoV50_generated_urdf/nao.urdf",
             "torso",
-            action_dim=26, obs_dim=63,
-            fixed_base=False,
-            self_collision=True)
+            action_dim = 26, obs_dim = 63,
+            fixed_base = True,
+            self_collision = True)
 
     def create_single_player_scene(self):
         return SinglePlayerStadiumScene(gravity=9.8, timestep=0.033/16, frame_skip=16)   # 8 instead of 4 here
@@ -36,7 +36,7 @@ class NaoLLC(LLC_RoboschoolForwardWalker, RoboschoolUrdfEnv):
         # We fix that by a bit of reward engineering.
         knees = np.array([j.current_relative_position() for j in [self.jdict["LKneePitch"], self.jdict["RKneePitch"]]], dtype=np.float32).flatten()
         knees_at_limit = np.count_nonzero(np.abs(knees[0::2]) > 0.99)
-        return +3-knees_at_limit if z > 0.35 else -1 #Editado por Fer original: +6 y z>1.3
+        return +3-knees_at_limit if z > 0.10 else -1 #Editado por Fer original: +6 y z>1.3
 
     def robot_specific_reset(self):
         LLC_RoboschoolForwardWalker.robot_specific_reset(self)
@@ -52,7 +52,7 @@ class NaoLLC(LLC_RoboschoolForwardWalker, RoboschoolUrdfEnv):
         else:
             yaw = yaw_center + self.np_random.uniform(low=-yaw_random_spread, high=yaw_random_spread)
 
-        cpose.set_xyz(self.start_pos_x, self.start_pos_y, self.start_pos_z + 0.40)
+        cpose.set_xyz(self.start_pos_x, self.start_pos_y, self.start_pos_z + self.initial_z)
         cpose.set_rpy(0, 0, yaw)  # just face random direction, but stay straight otherwise
         self.cpp_robot.set_pose_and_speed(cpose, 0,0,0)
-        self.initial_z = 0.35
+        #self.initial_z = 0.35

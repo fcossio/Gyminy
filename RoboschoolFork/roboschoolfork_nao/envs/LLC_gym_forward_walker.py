@@ -36,30 +36,37 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             initial_vel = 0
             if(j.name in self.initial_joint_position.keys()):
                 initial_pos = self.real_position(self.initial_joint_position[j.name], j.limits()[0:2])
-                initial_pos += self.np_random.uniform( low=-0.1, high=0.1 )
+                #initial_pos += self.np_random.uniform( low=-0.1, high=0.1 )
             else:
                 initial_pos = 0
             j.reset_current_position(initial_pos, initial_vel)
         self.feet = [self.parts[f] for f in self.foot_list]
         self.feet_contact = np.array([0.0 for f in self.foot_list], dtype=np.float32)
         self.scene.actor_introduce(self)
-        self.initial_z = 0.35
+        self.initial_z = 0.45
 
     def apply_action(self, a):
         assert( np.isfinite(a).all() )
         #np.insert(a,[33,34,35,36,37,38,39,40,41,42],0) #freeze hands
         #print(a)
+        delta = 0
         for n,j in enumerate(self.ordered_joints):
             #print(j.name)
             # j.set_motor_torque( self.power*j.power_coef*float(np.clip(a[n], -1, +1)) )
-            j.set_servo_target(self.real_position(a[n],j.limits()[0:2]),0.1,0.1,self.power*j.power_coef*.075)
-
-    def get_joints_relative_position(self):
-        j = np.array([j.current_relative_position() for j in self.ordered_joints], dtype=np.float32)
-        print("get_joints_relative_position")
-        print(j)
-        #input()
-        return
+            target = self.real_position(a[n],j.limits()[0:2])
+            actual = j.current_relative_position()
+            delta += abs(target - actual[0])
+            #print(j.name,target, actual[0],target - actual[0])
+            j.set_servo_target(target,0.8,20.0,self.power*j.power_coef*.1)
+        #print(delta)
+        return delta
+    # def get_action_position_distance(self, action):
+    #     j = np.array([j.current_relative_position() for j in self.ordered_joints], dtype=np.float32)
+    #     a = np.array(real_pos(action[])
+    #     print("get_joints_relative_position")
+    #     print(j)
+    #     #input()
+    #     return
 
     def calc_state(self):
         j = np.array([j.current_relative_position() for j in self.ordered_joints], dtype=np.float32).flatten()
@@ -72,7 +79,8 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         body_pose = self.robot_body.pose()
 
         parts_xyz = np.array( [p.pose().xyz() for p in self.parts.values()] ).flatten()
-        self.body_xyz = (parts_xyz[0::3].mean(), parts_xyz[1::3].mean(), body_pose.xyz()[2])  # torso z is more informative than mean z
+        #self.body_xyz = (parts_xyz[0::3].mean(), parts_xyz[1::3].mean(), body_pose.xyz()[2])  # torso z is more informative than mean z
+        self.body_xyz = body_pose.xyz()
         self.body_rpy = body_pose.rpy()
         z = self.body_xyz[2]
         r, p, yaw = self.body_rpy
@@ -90,7 +98,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         vx, vy, vz = np.dot(self.rot_minus_yaw, self.robot_body.speed())  # rotate speed back to body point of view
 
         more = np.array([
-            abs(self.phase/30 - (1 - self.phase/(2*30))), #para que la red sepa en que paso va
+            abs(self.phase/30), #para que la red sepa en que paso va
             z-self.initial_z,
             np.sin(self.angle_to_target), np.cos(self.angle_to_target),
             0.3*vx, 0.3*vy, 0.3*vz,    # 0.3 is just scaling typical speed into -1..+1, no physical sense here
@@ -121,9 +129,10 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
 
     def step(self, a):
         #input()
-        #self.get_joints_relative_position()
+        # print(self.get_joints_relative_position())
+        action_delta = 0
         if not self.scene.multiplayer:  # if multiplayer, action first applied to all robots, then global step() called, then step() for all robots with the same actions
-            self.apply_action(a)
+            action_delta = self.apply_action(a)
             self.scene.global_step()
 
         state = self.calc_state()  # also calculates self.joints_at_limit
@@ -136,7 +145,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         names = []
         for p in sorted(list(self.parts.keys())):
             if(p in ["RElbow","LElbow","RThig","LThig","RTibia","LTibia","r_wrist","l_wrist","RHip","LHip","r_ankle","l_ankle"]):
-                self.flag.append(self.scene.cpp_world.debug_sphere(self.parts[p].pose().xyz()[0], self.parts[p].pose().xyz()[1],self.parts[p].pose().xyz()[2], 0.05, 0x10FF10))
+                #self.flag.append(self.scene.cpp_world.debug_sphere(self.parts[p].pose().xyz()[0], self.parts[p].pose().xyz()[1],self.parts[p].pose().xyz()[2], 0.05, 0x10FF10))
                 relative_pose = np.array(self.parts[p].pose().xyz()) - np.array(body_pose.xyz())
                 if (self.phase%30 > 14):
                     relative_pose[0] = relative_pose[0] * -1
@@ -175,13 +184,15 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
 
         # electricity_cost  = self.electricity_cost  * float(np.abs(a*self.joint_speeds).mean())  # let's assume we have DC motor with controller, and reverse current braking
         # electricity_cost += self.stall_torque_cost * float(np.square(a).mean())
-
+        height_discount = -abs(0.37 - self.body_xyz[2]) * 3 - (abs(self.body_rpy[0]) + abs(self.body_rpy[1]) + abs(self.body_rpy[2]))/3
         joints_at_limit_cost = float(self.joints_at_limit_cost * self.joints_at_limit)
 
         self.rewards = [
             alive,
             progress,
             pose_discount/-100,
+            height_discount,
+            action_delta/-50,
             # electricity_cost,
             joints_at_limit_cost,
             feet_collision_cost

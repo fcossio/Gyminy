@@ -57,8 +57,8 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             # j.set_motor_torque( self.power*j.power_coef*float(np.clip(a[n], -1, +1)) )
             target = self.real_position(a[n],j.limits()[0:2])
             actual = j.current_relative_position()
-            delta += abs(target - actual[0])
-            #print(j.name,target, actual[0],target - actual[0])
+            delta += abs(max(a[n], actual[0]) - min(a[n],actual[0]))
+            #print(j.name,a[n], actual[0], delta)
             j.set_servo_target(target,0.8,20.0,self.power*j.power_coef*.1)
         #print(delta)
         return delta
@@ -155,7 +155,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         positions = []
         names = []
         for p in sorted(list(self.parts.keys())):
-            if(p in ["RElbow","LElbow","RThig","LThig","RTibia","LTibia","r_wrist","l_wrist","RHip","LHip","r_ankle","l_ankle"]):
+            if(p in ["RTibia","LTibia","r_ankle","l_ankle"]):
                 # x1,y1,z1 = body_pose.xyz()
                 # x2,y2,z2 = self.parts[p].pose().xyz()
                 # balls = 10
@@ -185,7 +185,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             pos[1] += y1
             pos[2] += z1
             self.flag.append(self.scene.cpp_world.debug_sphere(pos[0], pos[1], pos[2], 0.02, 0xFF1010))
-            delta = np.power(positions[n,[4,5]] - self.rand_animation[names[n]][ self.phase%15 ,[4,5]], 2)
+            delta = abs(positions[n,[4,5]] - self.rand_animation[names[n]][ self.phase%15 ,[4,5]])
             #print(names[n], delta)
             delta = np.sum(delta)
             pose_discount+=delta
@@ -217,10 +217,9 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.rewards = [
             alive,
             progress,
-            #delta = np.power(positions[n,[4,5]] - self.rand_animation[names[n]]
             pose_discount/-5,
-            #height_discount,
-            #action_delta/-50,
+            height_discount,
+            action_delta/-10,
             # electricity_cost,
             #joints_at_limit_cost,
             feet_collision_cost

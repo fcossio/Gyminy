@@ -13,12 +13,12 @@ class NaoLLC(LLC_RoboschoolForwardWalker, RoboschoolUrdfEnv):
     foot_list = ["r_ankle", "l_ankle"]
 
     def __init__(self):
-        LLC_RoboschoolForwardWalker.__init__(self, power=0.6)
+        LLC_RoboschoolForwardWalker.__init__(self, power=1)
         RoboschoolUrdfEnv.__init__(self,
             "nao_description/urdf/naoV50_generated_urdf/nao.urdf",
             "torso",
             action_dim = 26, obs_dim = 63,
-            fixed_base = True,
+            fixed_base = False,
             self_collision = True)
 
     def create_single_player_scene(self):
@@ -36,7 +36,7 @@ class NaoLLC(LLC_RoboschoolForwardWalker, RoboschoolUrdfEnv):
         # We fix that by a bit of reward engineering.
         knees = np.array([j.current_relative_position() for j in [self.jdict["LKneePitch"], self.jdict["RKneePitch"]]], dtype=np.float32).flatten()
         knees_at_limit = np.count_nonzero(np.abs(knees[0::2]) > 0.99)
-        return +3-knees_at_limit if z > 0.10 else -1 #Editado por Fer original: +6 y z>1.3
+        return +3-knees_at_limit if z > 0.2 else -1 #Editado por Fer original: +6 y z>1.3
 
     def robot_specific_reset(self):
         LLC_RoboschoolForwardWalker.robot_specific_reset(self)

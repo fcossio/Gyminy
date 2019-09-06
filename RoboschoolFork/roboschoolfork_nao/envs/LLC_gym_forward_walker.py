@@ -154,7 +154,11 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.flag.append(self.scene.cpp_world.debug_sphere(body_pose.xyz()[0], body_pose.xyz()[1],body_pose.xyz()[2], 0.05, 0x10FF10))
         positions = []
         names = []
+        feet_parallel_to_ground = 0
         for p in sorted(list(self.parts.keys())):
+            if p in ["r_ankle","l_anke"]:
+                a_r, a_p, a_yaw = self.parts[p].pose().rpy()
+                feet_parallel_to_ground +=  abs(a_r) + abs(a_p) + abs(a_yaw)
             if(p in ["RTibia","LTibia","r_ankle","l_ankle"]):
                 # x1,y1,z1 = body_pose.xyz()
                 # x2,y2,z2 = self.parts[p].pose().xyz()
@@ -163,7 +167,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
                 #     xs2 = (x2 - x1)*i/balls + x1
                 #     ys2 = (y2 - y1)*i/balls + y1
                 #     zs2 = (z2 - z1)*i/balls + z1
-                #     self.flag.append(self.scene.cpp_world.debug_sphere(xs2, ys2, zs2, 0.01, 0x10FF10))
+                #     self.flag.append(self.scene.cpp_world.debug_sphere(xs2, ys2, zs2, 0.01, 0x101567781871.1178284.pklFF10))
                 # self.flag.append(self.scene.cpp_world.debug_sphere(x2, y2, z2, 0.03, 0x10FF10))
                 relative_pose = np.array(self.parts[p].pose().xyz()) - np.array(body_pose.xyz())
                 # if (self.phase%30 > 14):
@@ -219,7 +223,8 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             progress,
             pose_discount/-5,
             height_discount,
-            action_delta/-10,
+            action_delta/-30,
+            feet_parallel_to_ground/-4,
             # electricity_cost,
             #joints_at_limit_cost,
             feet_collision_cost

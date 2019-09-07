@@ -220,11 +220,11 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
 
         self.rewards = [
             alive,
-            progress,
+            progress*1.5,
             pose_discount/-5,
             height_discount,
             action_delta/-30,
-            feet_parallel_to_ground/-4,
+            feet_parallel_to_ground/-8,
             # electricity_cost,
             #joints_at_limit_cost,
             feet_collision_cost

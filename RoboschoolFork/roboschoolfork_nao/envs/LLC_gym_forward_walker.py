@@ -38,14 +38,14 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             initial_vel = 0
             if(j.name in self.initial_joint_position.keys()):
                 initial_pos = self.real_position(self.initial_joint_position[j.name], j.limits()[0:2])
-                #initial_pos += self.np_random.uniform( low=-0.1, high=0.1 )
+                initial_pos += self.np_random.uniform( low=-0.1, high=0.1 )
             else:
                 initial_pos = 0
             j.reset_current_position(initial_pos, initial_vel)
         self.feet = [self.parts[f] for f in self.foot_list]
         self.feet_contact = np.array([0.0 for f in self.foot_list], dtype=np.float32)
         self.scene.actor_introduce(self)
-        self.initial_z = 0.45
+        self.initial_z = self.np_random.uniform( low=0.40, high=0.50 )
 
     def apply_action(self, a):
         assert( np.isfinite(a).all() )

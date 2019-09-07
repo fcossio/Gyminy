@@ -18,14 +18,12 @@ initial_timestep = 0
 
 # checkpoint_timesteps = 10000
 start_time = time()
-
-model = PPO2.load(model_path)
-# model = PPO2.load("ppo2_NaoForwardWalk11jul.pkl", env = env, tensorboard_log="./ppo2_NaoForwardWalk")
+model = PPO2.load(model_path, env = env)
 try:
     model.learn(total_timesteps=total_train_timesteps)
 except:
     print("training aborted")
-model.save(model_path + ".more")
+model.save(model_path.split(".")[0] + ".more.pkl")
 print("Saved")
 end_time = time()
 

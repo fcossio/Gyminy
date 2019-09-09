@@ -232,7 +232,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
 
         self.frame  += 1
         if (done and not self.done) or self.frame==self.spec.max_episode_steps:
-            self.phase = 0
+            self.phase = random.choice([0,14])
             self.episode_over(self.frame)
         self.done   += done   # 2 == 1+True
         self.reward += sum(self.rewards)

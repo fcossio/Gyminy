@@ -21,7 +21,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.camera_z = 45.0
         self.camera_follow = 0
         self.flag = 0
-        self.phase = 0
+        self.phase = random.choice([0,14])
         with open(os.path.join(script_dir, "AnimationsProcessed.json")) as file:
             self.animations = json.load(file)
         for i in range(len(self.animations)):
@@ -45,7 +45,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.feet = [self.parts[f] for f in self.foot_list]
         self.feet_contact = np.array([0.0 for f in self.foot_list], dtype=np.float32)
         self.scene.actor_introduce(self)
-        self.initial_z = self.np_random.uniform( low=0.40, high=0.50 )
+        self.initial_z = self.np_random.uniform( low=0.39, high=0.41 )
 
     def apply_action(self, a):
         assert( np.isfinite(a).all() )
@@ -59,7 +59,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             actual = j.current_relative_position()
             delta += abs(max(a[n], actual[0]) - min(a[n],actual[0]))
             #print(j.name,a[n], actual[0], delta)
-            j.set_servo_target(target,0.8,20.0,self.power*j.power_coef*.1)
+            j.set_servo_target(target,0.8,20.0,self.power*j.power_coef*.08)
         #print(delta)
         return delta
     # def get_action_position_distance(self, action):
@@ -220,11 +220,11 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
 
         self.rewards = [
             alive,
-            progress*1.5,
-            pose_discount/-5,
-            height_discount,
-            action_delta/-30,
-            feet_parallel_to_ground/-8,
+            progress*1.8,
+            pose_discount/-4,
+            height_discount/1.5,
+            action_delta/-35,
+            feet_parallel_to_ground/-7,
             # electricity_cost,
             #joints_at_limit_cost,
             feet_collision_cost

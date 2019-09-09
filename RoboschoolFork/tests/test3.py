@@ -20,9 +20,14 @@ activation_function = tf.nn.tanh
 net_arch = [512,256,128,64]
 # checkpoint_timesteps = 10000
 start_time = time()
-policy_kwargs = dict(act_fun=activation_function, net_arch = net_arch)
+policy_kwargs = dict(
+    #act_fun=activation_function,
+    net_arch = net_arch)
 model = PPO2(MlpPolicy, env, verbose=1, #tensorboard_log="./ppo2_NaoForwardWalk12jul",
-   policy_kwargs=policy_kwargs)
+    learning_rate = 0.0002,
+    nminibatches=n_cpu,
+    n_steps = 254,
+    policy_kwargs=policy_kwargs)
 # model = PPO2.load("ppo2_NaoForwardWalk11jul.pkl", env = env, tensorboard_log="./ppo2_NaoForwardWalk")
 try:
     model.learn(total_timesteps=total_train_timesteps)

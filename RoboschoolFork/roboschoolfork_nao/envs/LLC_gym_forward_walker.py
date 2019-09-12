@@ -109,6 +109,20 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             r, p], dtype=np.float32)
         obs = np.clip( np.concatenate([more] + [j] + [self.feet_contact]), -5, +5)
         #print("obs len:",len(obs))
+        phase_bilinear_transform = np.zeros([4,np.size(obs)], dtype=np.float32)
+        phase = 0
+        if self.phase < 7:
+            phase = 0
+        elif self.phase < 15:
+            phase = 1
+        elif self.phase < 22:
+            phase = 2
+        else:
+            phase = 3
+        phase_bilinear_transform[phase,:] = obs
+        phase_bilinear_transform = phase_bilinear_transform.flatten()
+        obs = phase_bilinear_transform
+
         return obs
 
     def calc_potential(self):
@@ -130,7 +144,8 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         #ptsnew[:,4] = np.arctan2(xyz[:,2], np.sqrt(xy)) # for elevation angle defined from XY-plane up
         ptsnew[:,5] = np.arctan2(xyz[:,1], xyz[:,0])
         return ptsnew
-
+    # def set_new_step_goals(self):
+    #     self.step_goal = []#[x_right, y_right, x_left, y_left, yaw]
     def step(self, a):
         #input()
         # print(self.get_joints_relative_position())
@@ -147,7 +162,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             else:
                 self.rand_animation = random.choice([self.animations[1], self.animations[5]])
 
-        self.phase = (self.phase + 1)%30
+
 
 
         #print(self.phase)
@@ -249,6 +264,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.done   += done   # 2 == 1+True
         self.reward += sum(self.rewards)
         self.HUD(state, a, done)
+        self.phase = (self.phase + 1)%30
         return state, sum(self.rewards), bool(done), {}
 
     def episode_over(self, frames):

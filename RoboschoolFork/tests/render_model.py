@@ -20,7 +20,7 @@ for i in range(5000):
     action, _states = model.predict(obs)
     obs, rewards, dones, info = env.step(action)
     env.render()
-    print(rewards)
+    #print(rewards)
     if dones:
         obs = env.reset()
         episodes += 1

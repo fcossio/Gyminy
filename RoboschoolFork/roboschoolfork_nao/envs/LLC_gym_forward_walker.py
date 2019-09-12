@@ -43,7 +43,9 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
                 initial_pos = 0
             j.reset_current_position(initial_pos, initial_vel)
         self.feet = [self.parts[f] for f in self.foot_list]
+        self.not_feet = [ self.parts[p] for p in set(self.parts.keys()) - set(self.foot_list) ]
         self.feet_contact = np.array([0.0 for f in self.foot_list], dtype=np.float32)
+        self.not_feet_contact = np.array([0.0 for f in self.not_feet], dtype=np.float32)
         self.scene.actor_introduce(self)
         self.initial_z = self.np_random.uniform( low=0.39, high=0.41 )
 
@@ -208,11 +210,21 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
 
         for i,f in enumerate(self.feet):
             contact_names = set(x.name for x in f.contact_list())
-            #print("CONTACT OF '%s' WITH %s" % (f.name, ",".join(contact_names)) )
+            # print("CONTACT OF '%s' WITH %s" % (f.name, ",".join(contact_names)) )
             self.feet_contact[i] = 1.0 if (self.foot_ground_object_names & contact_names) else 0.0
             if contact_names - self.foot_ground_object_names:
                 feet_collision_cost += self.foot_collision_cost
-
+        parts_collision_with_ground_cost = 0
+        for i,f in enumerate(self.not_feet):
+            contact_names = set(x.name for x in f.contact_list())
+            if 'floor' in contact_names:
+                parts_collision_with_ground_cost+=1;
+                if f.name == 'Head':
+                    parts_collision_with_ground_cost+=2;
+            #print("CONTACT OF '%s' WITH %s" % (f.name, ",".join(contact_names)) )
+            # self.not_feet_contact[i] = 1.0 if (self.foot_ground_object_names & contact_names) else 0.0
+            # if contact_names - self.foot_ground_object_names:
+            #     parts_collision_with_ground_cost += self.foot_collision_cost
         # electricity_cost  = self.electricity_cost  * float(np.abs(a*self.joint_speeds).mean())  # let's assume we have DC motor with controller, and reverse current braking
         # electricity_cost += self.stall_torque_cost * float(np.square(a).mean())
         height_discount = -abs(0.37 - self.body_xyz[2]) * 3 - (abs(self.body_rpy[0]) + abs(self.body_rpy[1]) + abs(self.body_rpy[2]))/3
@@ -225,7 +237,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             height_discount/1.5,
             action_delta/-35,
             feet_parallel_to_ground/-7,
-            # electricity_cost,
+            parts_collision_with_ground_cost/-2,
             #joints_at_limit_cost,
             feet_collision_cost
             ]

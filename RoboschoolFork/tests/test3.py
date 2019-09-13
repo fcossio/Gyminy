@@ -16,8 +16,8 @@ env = SubprocVecEnv([lambda: gym.make('NaoLLC-v1') for i in range(n_cpu)])
 initial_timestep = 0
 
 
-activation_function = tf.nn.tanh
-net_arch = [512,256,128,64]
+activation_function = tf.nn.relu
+net_arch = [512,256,1]
 # checkpoint_timesteps = 10000
 start_time = time()
 policy_kwargs = dict(

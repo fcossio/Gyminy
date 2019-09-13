@@ -22,6 +22,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.camera_follow = 0
         self.flag = 0
         self.phase = random.choice([0,14])
+        self.step_goal = [[0,0],[0,0]]
         with open(os.path.join(script_dir, "AnimationsProcessed.json")) as file:
             self.animations = json.load(file)
         for i in range(len(self.animations)):
@@ -46,6 +47,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.not_feet = [ self.parts[p] for p in set(self.parts.keys()) - set(self.foot_list) ]
         self.feet_contact = np.array([0.0 for f in self.foot_list], dtype=np.float32)
         self.not_feet_contact = np.array([0.0 for f in self.not_feet], dtype=np.float32)
+        self.step_goal = [[0,0.05],[0,-0.05]]
         self.scene.actor_introduce(self)
         self.initial_z = self.np_random.uniform( low=0.39, high=0.41 )
 
@@ -106,6 +108,10 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             z-self.initial_z,
             np.sin(self.angle_to_target), np.cos(self.angle_to_target),
             0.3*vx, 0.3*vy, 0.3*vz,    # 0.3 is just scaling typical speed into -1..+1, no physical sense here
+            self.body_xyz[0] - self.step_goal[0][0],
+            self.body_xyz[1] - self.step_goal[0][1],
+            self.body_xyz[0] - self.step_goal[1][0],
+            self.body_xyz[1] - self.step_goal[1][1],
             r, p], dtype=np.float32)
         obs = np.clip( np.concatenate([more] + [j] + [self.feet_contact]), -5, +5)
         #print("obs len:",len(obs))
@@ -144,8 +150,14 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         #ptsnew[:,4] = np.arctan2(xyz[:,2], np.sqrt(xy)) # for elevation angle defined from XY-plane up
         ptsnew[:,5] = np.arctan2(xyz[:,1], xyz[:,0])
         return ptsnew
-    # def set_new_step_goals(self):
-    #     self.step_goal = []#[x_right, y_right, x_left, y_left, yaw]
+    def set_new_step_goals(self, foot):
+        #self.step_goal = []#[[x_right, y_right], [x_left, y_left]]
+        x,y,_ = self.body_xyz
+        rnd = self.np_random.uniform( low=0.05, high=0.25 )
+        self.step_goal[foot] = [rnd+x,0.05+y]
+        if foot:
+            self.step_goal[foot] = [rnd+x,-0.05+y]
+
     def step(self, a):
         #input()
         # print(self.get_joints_relative_position())
@@ -159,23 +171,34 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         if self.phase%15 == 0:
             if self.phase >14:
                 self.rand_animation = random.choice([self.animations[0], self.animations[4]])
+                self.set_new_step_goals(0)
             else:
                 self.rand_animation = random.choice([self.animations[1], self.animations[5]])
+                self.set_new_step_goals(1)
 
 
 
 
         #print(self.phase)
-        body_pose = self.robot_body.pose()
         self.flag=[]
+        self.flag.append(self.scene.cpp_world.debug_sphere(self.step_goal[0][0], self.step_goal[0][1],0, 0.05, 0xFFFF10))
+        self.flag.append(self.scene.cpp_world.debug_sphere(self.step_goal[1][0], self.step_goal[1][1],0, 0.05, 0xFFFF10))
+        body_pose = self.robot_body.pose()
+
         self.flag.append(self.scene.cpp_world.debug_sphere(body_pose.xyz()[0], body_pose.xyz()[1],body_pose.xyz()[2], 0.05, 0x10FF10))
         positions = []
         names = []
         feet_parallel_to_ground = 0
+        distance_to_step_goals = 0
         for p in sorted(list(self.parts.keys())):
             if p in ["r_ankle","l_anke"]:
                 a_r, a_p, a_yaw = self.parts[p].pose().rpy()
                 feet_parallel_to_ground +=  abs(a_r) + abs(a_p) + abs(a_yaw)
+                a_x, a_y, a_z = self.parts[p].pose().xyz()
+                if p == 'r_ankle':
+                    distance_to_step_goals += np.sqrt((a_x - self.step_goal[0][0])**2 + (a_y - self.step_goal[0][1])**2)
+                else:
+                    distance_to_step_goals += np.sqrt((a_x - self.step_goal[1][0])**2 + (a_y - self.step_goal[1][1])**2)
             if(p in ["RTibia","LTibia","r_ankle","l_ankle"]):
                 # x1,y1,z1 = body_pose.xyz()
                 # x2,y2,z2 = self.parts[p].pose().xyz()
@@ -244,15 +267,16 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         # electricity_cost += self.stall_torque_cost * float(np.square(a).mean())
         height_discount = -abs(0.37 - self.body_xyz[2]) * 3 - (abs(self.body_rpy[0]) + abs(self.body_rpy[1]) + abs(self.body_rpy[2]))/3
         joints_at_limit_cost = float(self.joints_at_limit_cost * self.joints_at_limit)
-
+        print(distance_to_step_goals)
         self.rewards = [
             alive,
             progress*1.8,
-            pose_discount/-4,
+            pose_discount/-10,
             height_discount/1.5,
             action_delta/-35,
             feet_parallel_to_ground/-7,
             parts_collision_with_ground_cost/-2,
+            distance_to_step_goals/-1,
             #joints_at_limit_cost,
             feet_collision_cost
             ]

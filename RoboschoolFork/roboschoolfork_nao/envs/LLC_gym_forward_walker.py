@@ -185,7 +185,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.flag.append(self.scene.cpp_world.debug_sphere(self.step_goal[1][0], self.step_goal[1][1],0, 0.05, 0xFFFF10))
         body_pose = self.robot_body.pose()
 
-        self.flag.append(self.scene.cpp_world.debug_sphere(body_pose.xyz()[0], body_pose.xyz()[1],body_pose.xyz()[2], 0.05, 0x10FF10))
+        # self.flag.append(self.scene.cpp_world.debug_sphere(body_pose.xyz()[0], body_pose.xyz()[1],body_pose.xyz()[2], 0.05, 0x10FF10))
         positions = []
         names = []
         feet_parallel_to_ground = 0
@@ -225,7 +225,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             # if (self.phase%30 > 14):
             #     pos[0] *= -1
             #     pos[1] *= -1
-            pos[0] += x1 + 0.5
+            pos[0] += -0.5
             pos[1] += y1
             pos[2] += z1
             self.flag.append(self.scene.cpp_world.debug_sphere(pos[0], pos[1], pos[2], 0.02, 0xFF1010))
@@ -270,7 +270,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         print(distance_to_step_goals)
         self.rewards = [
             alive,
-            progress*1.8,
+            # progress*1,
             pose_discount/-10,
             height_discount/1.5,
             action_delta/-35,

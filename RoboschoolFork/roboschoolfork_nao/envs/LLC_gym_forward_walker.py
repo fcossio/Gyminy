@@ -267,7 +267,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         # electricity_cost += self.stall_torque_cost * float(np.square(a).mean())
         height_discount = -abs(0.37 - self.body_xyz[2]) * 3 - (abs(self.body_rpy[0]) + abs(self.body_rpy[1]) + abs(self.body_rpy[2]))/3
         joints_at_limit_cost = float(self.joints_at_limit_cost * self.joints_at_limit)
-        print(distance_to_step_goals)
+        # print(distance_to_step_goals)
         self.rewards = [
             alive,
             # progress*1,
@@ -276,7 +276,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             action_delta/-35,
             feet_parallel_to_ground/-7,
             parts_collision_with_ground_cost/-2,
-            distance_to_step_goals/-1,
+            distance_to_step_goals*-1.5,
             #joints_at_limit_cost,
             feet_collision_cost
             ]

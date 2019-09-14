@@ -276,7 +276,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             action_delta/-35,
             feet_parallel_to_ground/-7,
             parts_collision_with_ground_cost/-2,
-            distance_to_step_goals/-1,
+            distance_to_step_goals*-1.5,
             #joints_at_limit_cost,
             feet_collision_cost
             ]

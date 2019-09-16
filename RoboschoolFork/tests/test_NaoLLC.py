@@ -49,8 +49,8 @@ INITIAL_MOTOR_POS = {'HeadYaw': 0.0, #[0]
 obs, rewards, dones, info = env.step(np.array(list(INITIAL_MOTOR_POS.values())))
 for _ in range(5000):
     env.render()
-    obs, rewards, dones, info = env.step(np.array(list(INITIAL_MOTOR_POS.values())))
-    #obs, rewards, dones, info = env.step(env.action_space.sample())
+    #obs, rewards, dones, info = env.step(np.array(list(INITIAL_MOTOR_POS.values())))
+    obs, rewards, dones, info = env.step(env.action_space.sample())
     print(rewards)
     # env.step(env.action_space.sample())
     if dones:

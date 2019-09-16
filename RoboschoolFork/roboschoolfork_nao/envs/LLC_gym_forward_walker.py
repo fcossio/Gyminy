@@ -47,9 +47,14 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.not_feet = [ self.parts[p] for p in set(self.parts.keys()) - set(self.foot_list) ]
         self.feet_contact = np.array([0.0 for f in self.foot_list], dtype=np.float32)
         self.not_feet_contact = np.array([0.0 for f in self.not_feet], dtype=np.float32)
-        self.step_goal = [[0,0.05],[0,-0.05]]
+
         self.scene.actor_introduce(self)
         self.initial_z = self.np_random.uniform( low=0.39, high=0.41 )
+        self.step_goal = [[0,0.07],[0,-0.07]]
+        # if self.phase:
+        #     self.set_new_step_goals(1)
+
+
 
     def apply_action(self, a):
         assert( np.isfinite(a).all() )
@@ -61,11 +66,20 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             # j.set_motor_torque( self.power*j.power_coef*float(np.clip(a[n], -1, +1)) )
             target = self.real_position(a[n],j.limits()[0:2])
             actual = j.current_relative_position()
-            delta += abs(max(a[n], actual[0]) - min(a[n],actual[0]))
+            delta += abs(max(a[n], actual[0]) - min(a[n],actual[0])) * -1.5
             #print(j.name,a[n], actual[0], delta)
-            j.set_servo_target(target,0.8,20.0,self.power*j.power_coef*.08)
+            #freeze arms
+            freezed =["HeadPitch",
+                'LWristYaw','RWristYaw',
+                'LHand','RHand',
+                'LShoulderPitch','RShoulderPitch',
+                'LShoulderRoll', 'RShoulderRoll',
+                'LElbowYaw', 'RElbowYaw',
+                'LElbowPitch','RElbowPitch']
+            if j.name not in freezed:
+                j.set_servo_target(target,0.8,20.0,self.power*j.power_coef*.08)
         #print(delta)
-        return delta
+        return delta/len(self.ordered_joints)
     # def get_action_position_distance(self, action):
     #     j = np.array([j.current_relative_position() for j in self.ordered_joints], dtype=np.float32)
     #     a = np.array(real_pos(action[])
@@ -152,11 +166,13 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         return ptsnew
     def set_new_step_goals(self, foot):
         #self.step_goal = []#[[x_right, y_right], [x_left, y_left]]
-        x,y,_ = self.body_xyz
-        rnd = self.np_random.uniform( low=0.05, high=0.25 )
-        self.step_goal[foot] = [rnd+x,0.05+y]
+        rnd = self.np_random.uniform( low=0.2, high=0.201 )
         if foot:
-            self.step_goal[foot] = [rnd+x,-0.05+y]
+            x = self.step_goal[0][0]
+            self.step_goal[foot] = [rnd+x,-0.07]
+        else:
+            x = self.step_goal[1][0]
+            self.step_goal[foot] = [rnd+x,0.07]
 
     def step(self, a):
         #input()
@@ -193,12 +209,12 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         for p in sorted(list(self.parts.keys())):
             if p in ["r_ankle","l_anke"]:
                 a_r, a_p, a_yaw = self.parts[p].pose().rpy()
-                feet_parallel_to_ground +=  abs(a_r) + abs(a_p) + abs(a_yaw)
+                feet_parallel_to_ground +=  -abs(a_r) - abs(a_p)
                 a_x, a_y, a_z = self.parts[p].pose().xyz()
                 if p == 'r_ankle':
-                    distance_to_step_goals += np.sqrt((a_x - self.step_goal[0][0])**2 + (a_y - self.step_goal[0][1])**2)
+                    distance_to_step_goals += (np.sqrt((a_x - self.step_goal[0][0])**2 + (a_y - self.step_goal[0][1])**2))*-1
                 else:
-                    distance_to_step_goals += np.sqrt((a_x - self.step_goal[1][0])**2 + (a_y - self.step_goal[1][1])**2)
+                    distance_to_step_goals += (np.sqrt((a_x - self.step_goal[1][0])**2 + (a_y - self.step_goal[1][1])**2))*-1
             if(p in ["RTibia","LTibia","r_ankle","l_ankle"]):
                 # x1,y1,z1 = body_pose.xyz()
                 # x2,y2,z2 = self.parts[p].pose().xyz()
@@ -210,32 +226,37 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
                 #     self.flag.append(self.scene.cpp_world.debug_sphere(xs2, ys2, zs2, 0.01, 0x101567781871.1178284.pklFF10))
                 # self.flag.append(self.scene.cpp_world.debug_sphere(x2, y2, z2, 0.03, 0x10FF10))
                 relative_pose = np.array(self.parts[p].pose().xyz()) - np.array(body_pose.xyz())
-                # if (self.phase%30 > 14):
-                #     relative_pose[0] = relative_pose[0] * -1
                 positions.append(list(relative_pose))
                 equivalent = self.equivalents[p]
                 names.append(equivalent)
+        feet_parallel_to_ground *= 0.25
+
         positions = self.appendSpherical_np(np.array(positions))
         delta_angles = 0
-
         pose_discount = 0
+        expected_x = (self.step_goal[0][0] + self.step_goal[1][0])/2
         for n in range(len(names)):
             x1,y1,z1 = body_pose.xyz()
-            pos = self.polar2cart( positions[n,3] , self.rand_animation[names[n]][self.phase%15,[4]],self.rand_animation[names[n]][ self.phase%15 ,[5]])
+            r,p,yaw = body_pose.rpy()
+            pos = self.polar2cart( positions[n,3],
+                self.rand_animation[ names[n] ][ self.phase%15,[4] ],
+                self.rand_animation[ names[n] ][ self.phase%15,[5] ]
+                )
             # if (self.phase%30 > 14):
             #     pos[0] *= -1
             #     pos[1] *= -1
-            pos[0] += -0.5
-            pos[1] += y1
-            pos[2] += z1
+            pos[0] += expected_x + (self.phase%15)/30 * 0.4 - 0.1
+            pos[1] += 0
+            pos[2] += 0.4
             self.flag.append(self.scene.cpp_world.debug_sphere(pos[0], pos[1], pos[2], 0.02, 0xFF1010))
-            delta = abs(positions[n,[4,5]] - self.rand_animation[names[n]][ self.phase%15 ,[4,5]])
+            delta = abs(positions[n,[5]] - self.rand_animation[names[n]][self.phase%15,[5]])
             #print(names[n], delta)
             delta = np.sum(delta)
             pose_discount+=delta
+        pose_discount /= -7
         #print(pose_discount/100)
         alive = float(self.alive_bonus(state[0]+self.initial_z, self.body_rpy[1]))   # state[0] is body height above ground, body_rpy[1] is pitch
-        done = alive < 0
+        done = alive < 0 or (expected_x-1)>body_pose.xyz()[0]
         if not np.isfinite(state).all():
             print("~INF~", state)
             done = True
@@ -256,39 +277,42 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         for i,f in enumerate(self.not_feet):
             contact_names = set(x.name for x in f.contact_list())
             if 'floor' in contact_names:
-                parts_collision_with_ground_cost+=1;
+                parts_collision_with_ground_cost-=1;
                 if f.name == 'Head':
-                    parts_collision_with_ground_cost+=2;
+                    parts_collision_with_ground_cost-=2;
             #print("CONTACT OF '%s' WITH %s" % (f.name, ",".join(contact_names)) )
             # self.not_feet_contact[i] = 1.0 if (self.foot_ground_object_names & contact_names) else 0.0
             # if contact_names - self.foot_ground_object_names:
             #     parts_collision_with_ground_cost += self.foot_collision_cost
         # electricity_cost  = self.electricity_cost  * float(np.abs(a*self.joint_speeds).mean())  # let's assume we have DC motor with controller, and reverse current braking
         # electricity_cost += self.stall_torque_cost * float(np.square(a).mean())
-        height_discount = -abs(0.37 - self.body_xyz[2]) * 3 - (abs(self.body_rpy[0]) + abs(self.body_rpy[1]) + abs(self.body_rpy[2]))/3
+        height_discount = -abs(0.37 - self.body_xyz[2]) * 5
+        roll_discount = -abs(self.body_rpy[1]) * 0.75
         joints_at_limit_cost = float(self.joints_at_limit_cost * self.joints_at_limit)
         # print(distance_to_step_goals)
         self.rewards = [
-            alive,
-            progress*1,
-            pose_discount/-10,
-            height_discount/1.5,
-            action_delta/-30,
-            feet_parallel_to_ground/-7,
-            parts_collision_with_ground_cost/-2,
-            distance_to_step_goals*-0.3,
-            #joints_at_limit_cost,
+            #alive,
+            #progress*1,
+            0.5 + 0.5 * pose_discount,
+            0.1 + 0.1 * height_discount,
+            0.05 + 0.05 * roll_discount,
+            0.05 + 0.05 * action_delta,
+            0.1 + 0.1 * feet_parallel_to_ground,
+            0.2 + 0.2 * distance_to_step_goals,
+            parts_collision_with_ground_cost,
+            joints_at_limit_cost,
             feet_collision_cost
             ]
 
         self.frame  += 1
+        self.phase = (self.phase + 1)%30
         if (done and not self.done) or self.frame==self.spec.max_episode_steps:
             self.phase = random.choice([0,14])
             self.episode_over(self.frame)
         self.done   += done   # 2 == 1+True
         self.reward += sum(self.rewards)
         self.HUD(state, a, done)
-        self.phase = (self.phase + 1)%30
+
         return state, sum(self.rewards), bool(done), {}
 
     def episode_over(self, frames):

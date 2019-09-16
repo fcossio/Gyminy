@@ -34,9 +34,9 @@ class NaoLLC(LLC_RoboschoolForwardWalker, RoboschoolUrdfEnv):
         x,y,z = self.head.pose().xyz()
         # Failure mode: robot doesn't bend knees, tries to walk using hips.
         # We fix that by a bit of reward engineering.
-        knees = np.array([j.current_relative_position() for j in [self.jdict["LKneePitch"], self.jdict["RKneePitch"]]], dtype=np.float32).flatten()
-        knees_at_limit = np.count_nonzero(np.abs(knees[0::2]) > 0.99)
-        return +3-knees_at_limit if z > 0.2 else -1 #Editado por Fer original: +6 y z>1.3
+        # knees = np.array([j.current_relative_position() for j in [self.jdict["LKneePitch"], self.jdict["RKneePitch"]]], dtype=np.float32).flatten()
+        # knees_at_limit = np.count_nonzero(np.abs(knees[0::2]) > 0.99)
+        return +1 if z > 0.2 else -1 #Editado por Fer original: +6 y z>1.3
 
     def robot_specific_reset(self):
         LLC_RoboschoolForwardWalker.robot_specific_reset(self)

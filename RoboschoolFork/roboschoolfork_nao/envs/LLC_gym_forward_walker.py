@@ -69,7 +69,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             delta += abs(max(a[n], actual[0]) - min(a[n],actual[0])) * -1.5
             #print(j.name,a[n], actual[0], delta)
             #freeze arms
-            freezed =["HeadPitch",
+            freezed =["HeadPitch","HeadYaw",
                 'LWristYaw','RWristYaw',
                 'LHand','RHand',
                 'LShoulderPitch','RShoulderPitch',
@@ -116,7 +116,6 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
              [           0,             0, 1]]
             )
         vx, vy, vz = np.dot(self.rot_minus_yaw, self.robot_body.speed())  # rotate speed back to body point of view
-
         more = np.array([
             abs(self.phase/30), #para que la red sepa en que paso va
             z-self.initial_z,
@@ -211,10 +210,8 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
                 a_r, a_p, a_yaw = self.parts[p].pose().rpy()
                 feet_parallel_to_ground +=  -abs(a_r) - abs(a_p)
                 a_x, a_y, a_z = self.parts[p].pose().xyz()
-                if p == 'r_ankle':
-                    distance_to_step_goals += (np.sqrt((a_x - self.step_goal[0][0])**2 + (a_y - self.step_goal[0][1])**2))*-1
-                else:
-                    distance_to_step_goals += (np.sqrt((a_x - self.step_goal[1][0])**2 + (a_y - self.step_goal[1][1])**2))*-1
+                distance_to_step_goals += (np.sqrt((a_x - self.step_goal[0][0])**2 + (a_y - self.step_goal[0][1])**2))
+                distance_to_step_goals += (np.sqrt((a_x - self.step_goal[1][0])**2 + (a_y - self.step_goal[1][1])**2))
             if(p in ["RTibia","LTibia","r_ankle","l_ankle"]):
                 # x1,y1,z1 = body_pose.xyz()
                 # x2,y2,z2 = self.parts[p].pose().xyz()
@@ -256,7 +253,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         pose_discount /= -7
         #print(pose_discount/100)
         alive = float(self.alive_bonus(state[0]+self.initial_z, self.body_rpy[1]))   # state[0] is body height above ground, body_rpy[1] is pitch
-        done = alive < 0 or (expected_x-1)>body_pose.xyz()[0]
+        done = alive < 0 or (distance_to_step_goals-2)>body_pose.xyz()[0]
         if not np.isfinite(state).all():
             print("~INF~", state)
             done = True
@@ -293,12 +290,12 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.rewards = [
             #alive,
             #progress*1,
-            0.5 + 0.5 * pose_discount,
-            0.1 + 0.1 * height_discount,
-            0.05 + 0.05 * roll_discount,
-            0.05 + 0.05 * action_delta,
-            0.1 + 0.1 * feet_parallel_to_ground,
-            0.2 + 0.2 * distance_to_step_goals,
+            0.5 * np.exp(-pose_discount**2),
+            0.1 * np.exp(-height_discount**2),
+            0.05 *np.exp(-roll_discount**2),
+            0.05 *np.exp(-action_delta**2),
+            0.1 * np.exp(-feet_parallel_to_ground**2),
+            0.5 * np.exp(-(distance_to_step_goals**2)),
             parts_collision_with_ground_cost,
             joints_at_limit_cost,
             feet_collision_cost

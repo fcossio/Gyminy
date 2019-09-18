@@ -59,6 +59,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
 
     def apply_action(self, a):
         assert( np.isfinite(a).all() )
+        a[8]=a[2]#Hips movement
         #np.insert(a,[33,34,35,36,37,38,39,40,41,42],0) #freeze hands
         #print(a)
         delta = 0
@@ -299,7 +300,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             0.25 * np.exp(-feet_parallel_to_ground**2),
             #0.50 * np.exp(-(distance_to_step_goals**2)),
             #parts_collision_with_ground_cost,
-            joints_at_limit_cost,
+            #joints_at_limit_cost,
             feet_collision_cost
             ]
 

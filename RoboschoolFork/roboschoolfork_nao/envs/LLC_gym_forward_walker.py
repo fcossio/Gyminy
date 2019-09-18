@@ -64,11 +64,11 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         delta = 0
         for n,j in enumerate(self.ordered_joints):
             #print(j.name)
-            # j.set_motor_torque( self.power*j.power_coef*float(np.clip(a[n], -1, +1)) )
+            #j.set_motor_torque( self.power*j.power_coef*float(np.clip(a[n], -1, +1)) )
             target = self.real_position(a[n],j.limits()[0:2])
             actual = j.current_relative_position()
             delta += abs(max(a[n], actual[0]) - min(a[n],actual[0])) * -1.5
-            #print(j.name,a[n], actual[0], delta)
+            print(j.name,j.power_coef)
             #freeze arms
             freezed =["HeadPitch","HeadYaw",
                 'LWristYaw','RWristYaw',
@@ -78,7 +78,8 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
                 'LElbowYaw', 'RElbowYaw',
                 'LElbowPitch','RElbowPitch']
             if j.name not in freezed:
-                j.set_servo_target(target,0.8,20.0,self.power*j.power_coef*.08)
+                j.set_servo_target(target,0.002,0.08,self.power*j.power_coef)
+                #j.set_motor_torque( self.power*j.power_coef*float(np.clip(a[n], -1, +1)) )
         #print(delta)
         return delta/len(self.ordered_joints)
     # def get_action_position_distance(self, action):

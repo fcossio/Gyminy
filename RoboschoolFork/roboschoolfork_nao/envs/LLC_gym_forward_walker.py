@@ -69,7 +69,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             target = self.real_position(a[n],j.limits()[0:2])
             actual = j.current_relative_position()
             delta += abs(max(a[n], actual[0]) - min(a[n],actual[0])) * -1.5
-            print(j.name,j.power_coef)
+            #print(j.name,j.power_coef)
             #freeze arms
             freezed =["HeadPitch","HeadYaw",
                 'LWristYaw','RWristYaw',

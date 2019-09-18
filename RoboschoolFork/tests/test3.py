@@ -25,7 +25,7 @@ policy_kwargs = dict(
     net_arch = net_arch)
 model = PPO2(MlpPolicy, env, verbose=1, #tensorboard_log="./ppo2_NaoForwardWalk12jul",
     learning_rate = 0.00025,
-    nminibatches = 2,
+    nminibatches = 1,
     n_steps = 128,
     gamma = 0.99,
     policy_kwargs=policy_kwargs)

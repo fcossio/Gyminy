@@ -18,7 +18,7 @@ class NaoLLC(LLC_RoboschoolForwardWalker, RoboschoolUrdfEnv):
             "nao_description/urdf/naoV50_generated_urdf/nao.urdf",
             "torso",
             action_dim = 26, obs_dim = 67*4,
-            fixed_base = True,
+            fixed_base = False,
             self_collision = True)
 
     def create_single_player_scene(self):

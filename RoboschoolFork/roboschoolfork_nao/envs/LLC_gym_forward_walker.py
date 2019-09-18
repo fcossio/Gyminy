@@ -49,8 +49,8 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.not_feet_contact = np.array([0.0 for f in self.not_feet], dtype=np.float32)
 
         self.scene.actor_introduce(self)
-        #self.initial_z = self.np_random.uniform( low=0.39, high=0.41 )
-        self.initial_z = 0.45
+        self.initial_z = self.np_random.uniform( low=0.39, high=0.41 )
+        #self.initial_z = 0.45
         self.step_goal = [[0,0.07],[0,-0.07]]
         # if self.phase:
         #     self.set_new_step_goals(1)
@@ -291,11 +291,11 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         joints_at_limit_cost = float(self.joints_at_limit_cost * self.joints_at_limit)
         # print(distance_to_step_goals)
         self.rewards = [
-            #alive,
-            #progress*1,
-            0.50 * np.exp(-pose_discount**2),
+            alive,
+            progress,
+            0.25 * np.exp(-pose_discount**2),
             #0.10 * np.exp(-height_discount**2),
-            #0.05 *np.exp(-roll_discount**2),
+            0.25 * np.exp(-roll_discount**2),
             0.25 * np.exp(-action_delta**2),
             0.25 * np.exp(-feet_parallel_to_ground**2),
             #0.50 * np.exp(-(distance_to_step_goals**2)),

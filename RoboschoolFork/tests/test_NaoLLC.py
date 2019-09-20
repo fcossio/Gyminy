@@ -4,7 +4,7 @@ env = gym.make('NaoLLC-v1')
 env.reset()
 INITIAL_MOTOR_POS = {'HeadYaw': 0.0, #[0]
 'HeadPitch': 0.0, #[1]
-'LHipYawPitch': -1.0, #[2]
+'LHipYawPitch': -0.0, #[2]
 'LHipRoll': -0.25, #[3]
 'LHipPitch': 0.7, #[4]
 'LKneePitch': -0.9, #[5]
@@ -47,10 +47,15 @@ INITIAL_MOTOR_POS = {'HeadYaw': 0.0, #[0]
 }
 # print(np.array(list(INITIAL_MOTOR_POS.values())))
 obs, rewards, dones, info = env.step(np.array(list(INITIAL_MOTOR_POS.values())))
-for _ in range(5000):
+for i in range(5000):
     env.render()
-    obs, rewards, dones, info = env.step(np.array(list(INITIAL_MOTOR_POS.values())))
-    #obs, rewards, dones, info = env.step(env.action_space.sample())
+    hip = np.random.uniform( low=-1, high=1 )
+    # hip = np.sin(3.14159268 * i/15)
+    action = np.array(list(INITIAL_MOTOR_POS.values()))
+    action[10] = hip
+    action[4] = -hip
+    # obs, rewards, dones, info = env.step(action)
+    obs, rewards, dones, info = env.step(env.action_space.sample())
     print(rewards)
     # env.step(env.action_space.sample())
     if dones:

@@ -52,6 +52,9 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.scene.actor_introduce(self)
         self.initial_z = self.np_random.uniform( low=0.39, high=0.41 )
         #self.initial_z = 0.45
+        self.pose_history = np.array([j.current_relative_position()[0] for j in self.ordered_joints], dtype=np.float32)
+        self.pose_history = np.array([self.pose_history.copy(),self.pose_history.copy(),self.pose_history.copy()])
+        self.pose_acceleration = self.calc_pose_accel()
         self.step_goal = [[0,0.07],[0,-0.07]]
         for i in range(3): #Clear history with initial data
             self.history[i,:] = self.history[-1,:].copy()
@@ -96,7 +99,13 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
     #     return
 
     def calc_state(self):
-        j = np.array([j.current_relative_position() for j in self.ordered_joints], dtype=np.float32).flatten()
+        self.update_pose_history()
+        pose_vel = self.calc_pose_velocity()
+        self.pose_accel = self.calc_pose_accel()
+        pose = np.array([[j.current_relative_position()[0],0] for j in self.ordered_joints], dtype=np.float32)
+        j = np.array([self.pose_history[2],pose_vel])
+        j=j.flatten()
+        #input()
         # even elements [0::2] position, scaled to -1..+1 between limits
         # odd elements  [1::2] angular speed, scaled to show -1..+1
         self.joint_speeds = j[1::2]
@@ -152,6 +161,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.history[1,:] = self.history[2,:].copy()
         self.history[2,:] = self.history[3,:].copy()
         self.history[3,:] = obs
+        parts_acceleration = self.history[3,[0]]
         obs = self.history.flatten()
         return obs
 
@@ -294,21 +304,25 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             #     parts_collision_with_ground_cost += self.foot_collision_cost
         # electricity_cost  = self.electricity_cost  * float(np.abs(a*self.joint_speeds).mean())  # let's assume we have DC motor with controller, and reverse current braking
         # electricity_cost += self.stall_torque_cost * float(np.square(a).mean())
+        pose_accel_discount = - np.sum(np.abs(self.pose_accel/65))/len(self.ordered_joints)
+        #print("pose_accel_discount: ",pose_accel_discount)
         height_discount = -abs(0.37 - self.body_xyz[2]) * 5
         roll_discount = -abs(self.body_rpy[1]) * 0.75
         joints_at_limit_cost = float(self.joints_at_limit_cost * self.joints_at_limit)
         # print(distance_to_step_goals)
         self.rewards = [
+            1.00,
             #alive,
             #progress,
-            0.25 * np.exp(-pose_discount**2),
+            0.80 * pose_discount,
+            0.50 * pose_accel_discount,
             # 0.10 * np.exp(-height_discount**2),
             # 0.25 * np.exp(-roll_discount**2),
-            0.25 * np.exp(-action_delta**2),
-            0.25 * np.exp(-feet_parallel_to_ground**2),
-            #0.50 * np.exp(-(distance_to_step_goals**2)),
-            #parts_collision_with_ground_cost,
-            #joints_at_limit_cost,
+            # 0.25 * action_delta,
+            # 0.25 * np.exp(-feet_parallel_to_ground**2),
+            # 0.50 * np.exp(-(distance_to_step_goals**2)),
+            # parts_collision_with_ground_cost,
+            # joints_at_limit_cost,
             feet_collision_cost
             ]
 
@@ -378,3 +392,14 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
     def polar2cart(self, r, theta, phi):
         cart = np.array([ r * math.sin(theta) * math.cos(phi), r * math.sin(theta) * math.sin(phi), r * math.cos(theta) ])
         return cart
+    def update_pose_history(self):
+        self.pose_history[0] = self.pose_history[1].copy()
+        self.pose_history[1] = self.pose_history[2].copy()
+        self.pose_history[2] = np.array([j.current_relative_position()[0] for j in self.ordered_joints], dtype=np.float32)
+        return 0
+    def calc_pose_velocity(self):
+        v = (self.pose_history[2] - self.pose_history[1])/0.033
+        return v
+    def calc_pose_accel(self):
+        a = (self.pose_history[2] - 2 * self.pose_history[1] + self.pose_history[0])/(0.033**2)
+        return  a

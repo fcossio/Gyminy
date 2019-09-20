@@ -21,6 +21,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.camera_z = 45.0
         self.camera_follow = 0
         self.flag = 0
+        self.history = np.zeros([4,67],dtype=np.float32)
         self.phase = random.choice([0,14])
         self.step_goal = [[0,0],[0,0]]
         with open(os.path.join(script_dir, "AnimationsProcessed.json")) as file:
@@ -52,6 +53,9 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.initial_z = self.np_random.uniform( low=0.39, high=0.41 )
         #self.initial_z = 0.45
         self.step_goal = [[0,0.07],[0,-0.07]]
+        for i in range(3): #Clear history with initial data
+            self.history[i,:] = self.history[-1,:].copy()
+        # print("reset")
         # if self.phase:
         #     self.set_new_step_goals(1)
 
@@ -131,20 +135,24 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             r, p], dtype=np.float32)
         obs = np.clip( np.concatenate([more] + [j] + [self.feet_contact]), -5, +5)
         #print("obs len:",len(obs))
-        phase_bilinear_transform = np.zeros([4,np.size(obs)], dtype=np.float32)
-        phase = 0
-        if self.phase < 7:
-            phase = 0
-        elif self.phase < 15:
-            phase = 1
-        elif self.phase < 22:
-            phase = 2
-        else:
-            phase = 3
-        phase_bilinear_transform[phase,:] = obs
-        phase_bilinear_transform = phase_bilinear_transform.flatten()
-        obs = phase_bilinear_transform
-
+        # phase_bilinear_transform = np.zeros([4,np.size(obs)], dtype=np.float32)
+        # phase = 0
+        # if self.phase < 7:
+        #     phase = 0
+        # elif self.phase < 15:
+        #     phase = 1
+        # elif self.phase < 22:
+        #     phase = 2
+        # else:
+        #     phase = 3
+        # phase_bilinear_transform[phase,:] = obs
+        # phase_bilinear_transform = phase_bilinear_transform.flatten()
+        # obs = phase_bilinear_transform
+        self.history[0,:] = self.history[1,:].copy()
+        self.history[1,:] = self.history[2,:].copy()
+        self.history[2,:] = self.history[3,:].copy()
+        self.history[3,:] = obs
+        obs = self.history.flatten()
         return obs
 
     def calc_potential(self):
@@ -291,11 +299,11 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         joints_at_limit_cost = float(self.joints_at_limit_cost * self.joints_at_limit)
         # print(distance_to_step_goals)
         self.rewards = [
-            alive,
-            progress,
+            #alive,
+            #progress,
             0.25 * np.exp(-pose_discount**2),
-            #0.10 * np.exp(-height_discount**2),
-            0.25 * np.exp(-roll_discount**2),
+            # 0.10 * np.exp(-height_discount**2),
+            # 0.25 * np.exp(-roll_discount**2),
             0.25 * np.exp(-action_delta**2),
             0.25 * np.exp(-feet_parallel_to_ground**2),
             #0.50 * np.exp(-(distance_to_step_goals**2)),

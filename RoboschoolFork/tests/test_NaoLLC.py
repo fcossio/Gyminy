@@ -50,12 +50,12 @@ obs, rewards, dones, info = env.step(np.array(list(INITIAL_MOTOR_POS.values())))
 for i in range(5000):
     env.render()
     hip = np.random.uniform( low=-1, high=1 )
-    # hip = np.sin(3.14159268 * i/15)
+    hip = np.sin(3.14159268 * i/15)
     action = np.array(list(INITIAL_MOTOR_POS.values()))
     action[10] = hip
     action[4] = -hip
-    # obs, rewards, dones, info = env.step(action)
-    obs, rewards, dones, info = env.step(env.action_space.sample())
+    obs, rewards, dones, info = env.step(action)
+    # obs, rewards, dones, info = env.step(env.action_space.sample())
     print(rewards)
     # env.step(env.action_space.sample())
     if dones:

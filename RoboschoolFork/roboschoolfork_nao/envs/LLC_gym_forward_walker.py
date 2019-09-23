@@ -100,7 +100,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
 
     def calc_state(self):
         self.update_pose_history()
-        pose_vel = self.calc_pose_velocity()
+        pose_vel = self.calc_pose_velocity()/3
         self.pose_accel = self.calc_pose_accel()
         pose = np.array([[j.current_relative_position()[0],0] for j in self.ordered_joints], dtype=np.float32)
         j = np.array([self.pose_history[2],pose_vel])
@@ -199,6 +199,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         # print(self.get_joints_relative_position())
         action_delta = 0
         if not self.scene.multiplayer:  # if multiplayer, action first applied to all robots, then global step() called, then step() for all robots with the same actions
+            # if self.phase % 10 == 0:
             action_delta = self.apply_action(a)
             self.scene.global_step()
 
@@ -314,8 +315,8 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             1.00,
             #alive,
             #progress,
-            0.80 * pose_discount,
-            0.50 * pose_accel_discount,
+            0.90 * pose_discount,
+            0.10 * pose_accel_discount,
             # 0.10 * np.exp(-height_discount**2),
             # 0.25 * np.exp(-roll_discount**2),
             # 0.25 * action_delta,
@@ -325,7 +326,6 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             # joints_at_limit_cost,
             feet_collision_cost
             ]
-
         self.frame  += 1
         self.phase = (self.phase + 1)%30
         if (done and not self.done) or self.frame==self.spec.max_episode_steps:

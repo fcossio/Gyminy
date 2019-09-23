@@ -8,16 +8,29 @@ from stable_baselines.common.vec_env import SubprocVecEnv
 from stable_baselines import PPO2
 from time import time
 
+def make_env(env_id, rank, seed=0):
+  """
+  Utility function for multiprocessed env.
 
+  :param env_id: (str) the environment ID
+  :param num_env: (int) the number of environments you wish to have in subprocesses
+  :param seed: (int) the inital seed for RNG
+  :param rank: (int) index of the subprocess
+  """
+  def _init():
+      env = gym.make(env_id)
+      env.seed(seed + rank)
+      return env
+  return _init
 
 # multiprocess environment
 
-env = SubprocVecEnv([lambda: gym.make('NaoLLC-v1') for i in range(n_cpu)])
+env = SubprocVecEnv([make_env('NaoLLC-v1', i) for i in range(n_cpu)])
 initial_timestep = 0
 
 
 activation_function = tf.nn.relu
-net_arch = [512,256,128]
+net_arch = [512,256,64]
 # checkpoint_timesteps = 10000
 start_time = time()
 policy_kwargs = dict(

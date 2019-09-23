@@ -86,7 +86,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
                 'LElbowYaw', 'RElbowYaw',
                 'LElbowPitch','RElbowPitch']
             if j.name not in freezed:
-                j.set_servo_target(target,0.002,0.08,self.power*j.power_coef)
+                j.set_servo_target(target,0.004,0.08,self.power*j.power_coef)
                 #j.set_motor_torque( self.power*j.power_coef*float(np.clip(a[n], -1, +1)) )
         #print(delta)
         return delta/len(self.ordered_joints)
@@ -314,15 +314,15 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.rewards = [
             1.00,
             #alive,
-            #progress,
-            0.90 * pose_discount,
-            0.10 * pose_accel_discount,
-            # 0.10 * np.exp(-height_discount**2),
+            0.50 * progress,
+            # 0.90 * pose_discount,
+            0.25 * pose_accel_discount,
+            0.25 * height_discount,
             # 0.25 * np.exp(-roll_discount**2),
             # 0.25 * action_delta,
-            # 0.25 * np.exp(-feet_parallel_to_ground**2),
+            0.25 * feet_parallel_to_ground,
             # 0.50 * np.exp(-(distance_to_step_goals**2)),
-            # parts_collision_with_ground_cost,
+            parts_collision_with_ground_cost,
             # joints_at_limit_cost,
             feet_collision_cost
             ]

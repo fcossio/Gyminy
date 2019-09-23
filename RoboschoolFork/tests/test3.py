@@ -23,7 +23,7 @@ start_time = time()
 policy_kwargs = dict(
     #act_fun=activation_function,
     net_arch = net_arch)
-model = PPO2(MlpPolicy, env, verbose=1, tensorboard_log="./fixed_body_leg_cycle",
+model = PPO2(MlpPolicy, env, verbose=1, #tensorboard_log="./fixed_body_leg_cycle",
     learning_rate = 0.00025,
     nminibatches = 1,
     n_steps = 64,

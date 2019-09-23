@@ -17,7 +17,7 @@ initial_timestep = 0
 
 
 activation_function = tf.nn.relu
-net_arch = [512,256,1]
+net_arch = [512,256,128]
 # checkpoint_timesteps = 10000
 start_time = time()
 policy_kwargs = dict(
@@ -25,9 +25,9 @@ policy_kwargs = dict(
     net_arch = net_arch)
 model = PPO2(MlpPolicy, env, verbose=1, #tensorboard_log="./fixed_body_leg_cycle",
     learning_rate = 0.00025,
-    nminibatches = 1,
-    n_steps = 64,
-    gamma = 0.99,
+    nminibatches = n_cpu,
+    n_steps = 128,
+    gamma = 0.95,
     policy_kwargs=policy_kwargs)
 # model = PPO2.load("ppo2_NaoForwardWalk11jul.pkl", env = env, tensorboard_log="./ppo2_NaoForwardWalk")
 try:

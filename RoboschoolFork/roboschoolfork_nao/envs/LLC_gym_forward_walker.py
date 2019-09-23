@@ -50,7 +50,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.not_feet_contact = np.array([0.0 for f in self.not_feet], dtype=np.float32)
 
         self.scene.actor_introduce(self)
-        self.initial_z = self.np_random.uniform( low=0.39, high=0.41 )
+        self.initial_z = self.np_random.uniform( low=0.38, high=0.40 )
         #self.initial_z = 0.45
         self.pose_history = np.array([j.current_relative_position()[0] for j in self.ordered_joints], dtype=np.float32)
         self.pose_history = np.array([self.pose_history.copy(),self.pose_history.copy(),self.pose_history.copy()])
@@ -86,7 +86,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
                 'LElbowYaw', 'RElbowYaw',
                 'LElbowPitch','RElbowPitch']
             if j.name not in freezed:
-                j.set_servo_target(target,0.004,0.08,self.power*j.power_coef)
+                j.set_servo_target(target,0.003,0.08,self.power*j.power_coef)
                 #j.set_motor_torque( self.power*j.power_coef*float(np.clip(a[n], -1, +1)) )
         #print(delta)
         return delta/len(self.ordered_joints)
@@ -312,17 +312,17 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         joints_at_limit_cost = float(self.joints_at_limit_cost * self.joints_at_limit)
         # print(distance_to_step_goals)
         self.rewards = [
-            1.00,
+            2.00,
             #alive,
-            0.50 * progress,
-            # 0.90 * pose_discount,
-            0.25 * pose_accel_discount,
-            0.25 * height_discount,
-            # 0.25 * np.exp(-roll_discount**2),
+            progress,
+            #0.50 * pose_discount,
+            0.50 * pose_accel_discount,
+            1.00 * height_discount,
+            1.00 * roll_discount,
             # 0.25 * action_delta,
-            0.25 * feet_parallel_to_ground,
+            0.50 * feet_parallel_to_ground,
             # 0.50 * np.exp(-(distance_to_step_goals**2)),
-            parts_collision_with_ground_cost,
+            0.25 * parts_collision_with_ground_cost,
             # joints_at_limit_cost,
             feet_collision_cost
             ]

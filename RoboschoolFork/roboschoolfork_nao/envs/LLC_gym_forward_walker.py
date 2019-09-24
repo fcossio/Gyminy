@@ -58,6 +58,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.step_goal = [[0,0.07],[0,-0.07]]
         for i in range(3): #Clear history with initial data
             self.history[i,:] = self.history[-1,:].copy()
+        self.kp = self.np_random.uniform(low=0.0022, high=0.0028)
         # print("reset")
         # if self.phase:
         #     self.set_new_step_goals(1)
@@ -79,14 +80,15 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             #print(j.name,j.power_coef)
             #freeze arms
             freezed =["HeadPitch","HeadYaw",
-                'LWristYaw','RWristYaw',
-                'LHand','RHand',
-                'LShoulderPitch','RShoulderPitch',
-                'LShoulderRoll', 'RShoulderRoll',
-                'LElbowYaw', 'RElbowYaw',
-                'LElbowPitch','RElbowPitch']
+                # 'LWristYaw','RWristYaw',
+                # 'LHand','RHand',
+                # 'LShoulderPitch','RShoulderPitch',
+                # 'LShoulderRoll', 'RShoulderRoll',
+                # 'LElbowYaw', 'RElbowYaw',
+                # 'LElbowPitch','RElbowPitch']
+                ]
             if j.name not in freezed:
-                j.set_servo_target(target,0.003,0.08,self.power*j.power_coef)
+                j.set_servo_target(target,self.kp,0.08,self.power*j.power_coef)
                 #j.set_motor_torque( self.power*j.power_coef*float(np.clip(a[n], -1, +1)) )
         #print(delta)
         return delta/len(self.ordered_joints)
@@ -312,15 +314,15 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         joints_at_limit_cost = float(self.joints_at_limit_cost * self.joints_at_limit)
         # print(distance_to_step_goals)
         self.rewards = [
-            2.00,
-            #alive,
-            progress,
+            #2.00,
+            2 * alive,
+            0.50 * progress,
             #0.50 * pose_discount,
             0.50 * pose_accel_discount,
             1.00 * height_discount,
             1.00 * roll_discount,
             # 0.25 * action_delta,
-            0.50 * feet_parallel_to_ground,
+            0.75 * feet_parallel_to_ground,
             # 0.50 * np.exp(-(distance_to_step_goals**2)),
             0.25 * parts_collision_with_ground_cost,
             # joints_at_limit_cost,

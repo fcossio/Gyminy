@@ -80,13 +80,12 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             #print(j.name,j.power_coef)
             #freeze arms
             freezed =["HeadPitch","HeadYaw",
-                # 'LWristYaw','RWristYaw',
-                # 'LHand','RHand',
-                # 'LShoulderPitch','RShoulderPitch',
-                # 'LShoulderRoll', 'RShoulderRoll',
-                # 'LElbowYaw', 'RElbowYaw',
-                # 'LElbowPitch','RElbowPitch']
-                ]
+                'LWristYaw','RWristYaw',
+                'LHand','RHand',
+                'LShoulderPitch','RShoulderPitch',
+                'LShoulderRoll', 'RShoulderRoll',
+                'LElbowYaw', 'RElbowYaw',
+                'LElbowRoll','RElbowRoll']
             if j.name not in freezed:
                 j.set_servo_target(target,self.kp,0.08,self.power*j.power_coef)
                 #j.set_motor_torque( self.power*j.power_coef*float(np.clip(a[n], -1, +1)) )
@@ -270,7 +269,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             pos[1] += 0
             pos[2] += body_pose.xyz()[2]#0.4
             self.flag.append(self.scene.cpp_world.debug_sphere(pos[0], pos[1], pos[2], 0.02, 0xFF1010))
-            delta = abs(positions[n,[5]] - self.rand_animation[names[n]][self.phase%15,[5]])
+            delta = abs(positions[n,[4,5]] - self.rand_animation[names[n]][self.phase%15,[4,5]])
             #print(names[n], delta)
             delta = np.sum(delta)
             pose_discount+=delta
@@ -314,24 +313,26 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         joints_at_limit_cost = float(self.joints_at_limit_cost * self.joints_at_limit)
         # print(distance_to_step_goals)
         self.rewards = [
-            #2.00,
-            2 * alive,
-            0.50 * progress,
-            #0.50 * pose_discount,
-            0.50 * pose_accel_discount,
-            1.00 * height_discount,
-            1.00 * roll_discount,
+              2.00,
+            # 2 * alive,
+            # 0.50 * progress,
+              1.00 * pose_discount,
+              0.20 * pose_accel_discount,
+            # 1.00 * height_discount,
+            # 1.00 * roll_discount,
             # 0.25 * action_delta,
-            0.75 * feet_parallel_to_ground,
-            # 0.50 * np.exp(-(distance_to_step_goals**2)),
-            0.25 * parts_collision_with_ground_cost,
+            # 0.75 * feet_parallel_to_ground,
+            # # 0.50 * np.exp(-(distance_to_step_goals**2)),
+            # 0.25 * parts_collision_with_ground_cost,
             # joints_at_limit_cost,
             feet_collision_cost
             ]
         self.frame  += 1
         self.phase = (self.phase + 1)%30
+        if self.phase % 15 == 0:
+            done = 1
         if (done and not self.done) or self.frame==self.spec.max_episode_steps:
-            self.phase = random.choice([0,14])
+            self.phase = random.choice([0,15])
             self.episode_over(self.frame)
         self.done   += done   # 2 == 1+True
         self.reward += sum(self.rewards)

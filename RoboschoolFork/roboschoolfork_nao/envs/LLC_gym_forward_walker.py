@@ -22,7 +22,10 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.camera_follow = 0
         self.flag = 0
         self.history = np.zeros([4,67],dtype=np.float32)
-        self.phase = random.choice([0,14])
+        self.fixed_train = True
+        if self.fixed_train:
+            self.phase = random.choice([0,14])
+        self.dephase = 0
         self.step_goal = [[0,0],[0,0]]
         with open(os.path.join(script_dir, "AnimationsProcessed.json")) as file:
             self.animations = json.load(file)
@@ -38,6 +41,10 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
     def robot_specific_reset(self):
         for j in self.ordered_joints:
             initial_vel = 0
+            if self.fixed_train:
+                for joint_name in ['RHipPitch','LHipPitch','RKneePitch', 'LHipPitch']:
+                    self.initial_joint_position[joint_name] = self.np_random.uniform(low=-0.95, high=0.95)
+
             if(j.name in self.initial_joint_position.keys()):
                 initial_pos = self.real_position(self.initial_joint_position[j.name], j.limits()[0:2])
                 initial_pos += self.np_random.uniform( low=-0.1, high=0.1 )
@@ -317,7 +324,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             # 2 * alive,
             # 0.50 * progress,
               1.00 * pose_discount,
-              0.20 * pose_accel_discount,
+              0.30 * pose_accel_discount,
             # 1.00 * height_discount,
             # 1.00 * roll_discount,
             # 0.25 * action_delta,
@@ -329,10 +336,14 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             ]
         self.frame  += 1
         self.phase = (self.phase + 1)%30
-        if self.phase % 15 == 0:
-            done = 1
+        if self.fixed_train:
+            if (self.phase - self.dephase) % 15 == 0:#For pretrain gait cycle
+                done = 1
         if (done and not self.done) or self.frame==self.spec.max_episode_steps:
             self.phase = random.choice([0,15])
+            if self.fixed_train:
+                self.dephase = (self.dephase + 1)%14
+                self.phase += self.dephase
             self.episode_over(self.frame)
         self.done   += done   # 2 == 1+True
         self.reward += sum(self.rewards)

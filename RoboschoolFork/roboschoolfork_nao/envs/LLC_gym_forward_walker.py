@@ -230,8 +230,8 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
 
         #print(self.phase)
         self.flag=[]
-        # self.flag.append(self.scene.cpp_world.debug_sphere(self.step_goal[0][0], self.step_goal[0][1],0, 0.05, 0xFFFF10))
-        # self.flag.append(self.scene.cpp_world.debug_sphere(self.step_goal[1][0], self.step_goal[1][1],0, 0.05, 0xFFFF10))
+        self.flag.append(self.scene.cpp_world.debug_sphere(self.step_goal[0][0], self.step_goal[0][1],0, 0.05, 0xFFFF10))
+        self.flag.append(self.scene.cpp_world.debug_sphere(self.step_goal[1][0], self.step_goal[1][1],0, 0.05, 0xFFFF10))
         body_pose = self.robot_body.pose()
 
         # self.flag.append(self.scene.cpp_world.debug_sphere(body_pose.xyz()[0], body_pose.xyz()[1],body_pose.xyz()[2], 0.05, 0x10FF10))
@@ -276,9 +276,9 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             # if (self.phase%30 > 14):
             #     pos[0] *= -1
             #     pos[1] *= -1
-            pos[0] += body_pose.xyz()[0]#expected_x + (self.phase%15)/30 * 0.4 - 0.1
+            pos[0] += expected_x + (self.phase%15)/30 * 0.4 - 0.1 #body_pose.xyz()[0]
             pos[1] += 0
-            pos[2] += body_pose.xyz()[2]#0.4
+            pos[2] += 0.4 #body_pose.xyz()[2]
             self.flag.append(self.scene.cpp_world.debug_sphere(pos[0], pos[1], pos[2], 0.02, 0xFF1010))
             delta1 = abs(positions[n,[5]] - self.rand_animation[names[n]][self.phase%15,[5]])
             delta2 = abs(positions[n,[4]] - self.rand_animation[names[n]][self.phase%15,[4]])*0.25
@@ -288,7 +288,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         pose_discount /= -7
         #print(pose_discount/100)
         alive = float(self.alive_bonus(state[0]+self.initial_z, self.body_rpy[1]))   # state[0] is body height above ground, body_rpy[1] is pitch
-        done = alive < 0 # or (distance_to_step_goals-2)>body_pose.xyz()[0]
+        done = alive < 0 or (distance_to_step_goals-2)>body_pose.xyz()[0]
         if not np.isfinite(state).all():
             print("~INF~", state)
             done = True
@@ -325,17 +325,17 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         joints_at_limit_cost = float(self.joints_at_limit_cost * self.joints_at_limit)
         # print(distance_to_step_goals)
         self.rewards = [
-              2.00,
-            # 2 * alive,
-            # 0.50 * progress,
-              1.00 * pose_discount,
-              0.10 * pose_accel_discount,
-            # 1.00 * height_discount,
-            # 1.00 * roll_discount,
+            #  2.00,
+             3 * alive,
+             0.70 * progress,
+             1.00 * pose_discount,
+             0.10 * pose_accel_discount,
+             0.50 * height_discount,
+             0.50 * roll_discount,
             # 0.25 * action_delta,
-            # 0.75 * feet_parallel_to_ground,
-            # # 0.50 * np.exp(-(distance_to_step_goals**2)),
-            # 0.25 * parts_collision_with_ground_cost,
+             0.25 * feet_parallel_to_ground,
+             0.50 * np.exp(-(distance_to_step_goals**2)),
+             0.25 * parts_collision_with_ground_cost,
             # joints_at_limit_cost,
             feet_collision_cost
             ]

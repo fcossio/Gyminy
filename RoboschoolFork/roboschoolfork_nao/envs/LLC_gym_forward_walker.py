@@ -23,9 +23,9 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.flag = 0
         self.history = np.zeros([4,67],dtype=np.float32)
         self.fixed_train = True
+        self.phase = random.choice([0,14])
         if self.fixed_train:
-            self.phase = random.choice([0,14])
-        self.dephase = 0
+            self.dephase = 0
         self.step_goal = [[0,0],[0,0]]
         with open(os.path.join(script_dir, "AnimationsProcessed.json")) as file:
             self.animations = json.load(file)
@@ -43,7 +43,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             initial_vel = 0
             if self.fixed_train:
                 for joint_name in ['RHipPitch','LHipPitch','RKneePitch', 'LHipPitch']:
-                    self.initial_joint_position[joint_name] = self.np_random.uniform(low=-0.95, high=0.95)
+                    self.initial_joint_position[joint_name] = self.np_random.uniform(low=-0.5, high=0.5)
 
             if(j.name in self.initial_joint_position.keys()):
                 initial_pos = self.real_position(self.initial_joint_position[j.name], j.limits()[0:2])
@@ -216,10 +216,14 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         if self.phase%15 == 0:
             if self.phase >14:
                 self.rand_animation = random.choice([self.animations[0], self.animations[4]])
+                if self.fixed_train:
+                    self.rand_animation = self.animations[0]
                 self.set_new_step_goals(0)
             else:
                 self.rand_animation = random.choice([self.animations[1], self.animations[5]])
                 self.set_new_step_goals(1)
+                if self.fixed_train:
+                    self.rand_animation = self.animations[1]
 
 
 
@@ -324,7 +328,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             # 2 * alive,
             # 0.50 * progress,
               1.00 * pose_discount,
-              0.30 * pose_accel_discount,
+              0.10 * pose_accel_discount,
             # 1.00 * height_discount,
             # 1.00 * roll_discount,
             # 0.25 * action_delta,
@@ -342,10 +346,10 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         if (done and not self.done) or self.frame==self.spec.max_episode_steps:
             self.phase = random.choice([0,15])
             if self.fixed_train:
-                self.dephase = (self.dephase + 1)%14
+                self.dephase = (self.dephase + 1) % 5
                 self.phase += self.dephase
             self.episode_over(self.frame)
-        self.done   += done   # 2 == 1+True
+        self.done   += done   # d2 == 1+True
         self.reward += sum(self.rewards)
         self.HUD(state, a, done)
 

@@ -92,7 +92,16 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
                 'LShoulderPitch','RShoulderPitch',
                 'LShoulderRoll', 'RShoulderRoll',
                 'LElbowYaw', 'RElbowYaw',
-                'LElbowRoll','RElbowRoll']
+                'LElbowRoll','RElbowRoll',
+                # 'LHipYawPitch',
+                # 'LHipRoll',
+                # 'LHipPitch',
+                # 'LKneePitch',
+                # 'RHipYawPitch',
+                # 'RHipRoll',
+                # 'RHipPitch',
+                # 'RKneePitch',
+                ]
             if j.name not in freezed:
                 j.set_servo_target(target,self.kp,0.08,self.power*j.power_coef)
                 #j.set_motor_torque( self.power*j.power_coef*float(np.clip(a[n], -1, +1)) )
@@ -319,17 +328,21 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         # electricity_cost  = self.electricity_cost  * float(np.abs(a*self.joint_speeds).mean())  # let's assume we have DC motor with controller, and reverse current braking
         # electricity_cost += self.stall_torque_cost * float(np.square(a).mean())
         pose_accel_discount = - np.sum(np.abs(self.pose_accel/65))/len(self.ordered_joints)
-        #print("pose_accel_discount: ",pose_accel_discount)
+        ankle_accel_discount = - np.sum(np.abs([self.pose_accel[6]/65, self.pose_accel[7]/65, self.pose_accel[12]/65, self.pose_accel[13]/65]))/8
+        # print("ankle_accel_discount", ankle_accel_discount)
+        # print("pose_accel_discount: ",pose_accel_discount)
         height_discount = -abs(0.37 - self.body_xyz[2]) * 5
         roll_discount = -abs(self.body_rpy[1]) * 0.75
         joints_at_limit_cost = float(self.joints_at_limit_cost * self.joints_at_limit)
+
         # print(distance_to_step_goals)
         self.rewards = [
-            #  2.00,
+            # 2.00,
              3 * alive,
              0.70 * progress,
              1.00 * pose_discount,
              0.10 * pose_accel_discount,
+             0.50 * ankle_accel_discount,
              0.50 * height_discount,
              0.50 * roll_discount,
             # 0.25 * action_delta,

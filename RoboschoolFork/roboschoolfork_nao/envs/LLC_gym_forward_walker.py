@@ -249,9 +249,10 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         feet_parallel_to_ground = 0
         distance_to_step_goals = 0
         for p in sorted(list(self.parts.keys())):
-            if p in ["r_ankle","l_anke"]:
+            if p in ["r_ankle","l_ankle"]:
                 a_r, a_p, a_yaw = self.parts[p].pose().rpy()
-                feet_parallel_to_ground +=  -abs(a_r) - abs(a_p)
+                #print(p, round(a_r,2), round(a_p,2))
+                feet_parallel_to_ground +=  -abs(a_r**2) - abs(a_p**2)
                 a_x, a_y, a_z = self.parts[p].pose().xyz()
                 distance_to_step_goals += (np.sqrt((a_x - self.step_goal[0][0])**2 + (a_y - self.step_goal[0][1])**2))
                 distance_to_step_goals += (np.sqrt((a_x - self.step_goal[1][0])**2 + (a_y - self.step_goal[1][1])**2))
@@ -270,6 +271,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
                 equivalent = self.equivalents[p]
                 names.append(equivalent)
         feet_parallel_to_ground *= 0.25
+        #print("feet_parallel_to_ground",feet_parallel_to_ground)
 
         positions = self.appendSpherical_np(np.array(positions))
         delta_angles = 0
@@ -340,15 +342,15 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             # 2.00,
              3 * alive,
              0.70 * progress,
-             1.00 * pose_discount,
-             0.10 * pose_accel_discount,
-             0.50 * ankle_accel_discount,
-             0.50 * height_discount,
+             1.10 * pose_discount,
+             0.12 * pose_accel_discount,
+             0.40 * ankle_accel_discount,
+             0.70 * height_discount,
              0.50 * roll_discount,
             # 0.25 * action_delta,
              0.25 * feet_parallel_to_ground,
              0.50 * np.exp(-(distance_to_step_goals**2)),
-             0.25 * parts_collision_with_ground_cost,
+             0.35 * parts_collision_with_ground_cost,
             # joints_at_limit_cost,
             feet_collision_cost
             ]

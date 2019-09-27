@@ -22,7 +22,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.camera_follow = 0
         self.flag = 0
         self.history = np.zeros([4,67],dtype=np.float32)
-        self.fixed_train = True
+        self.fixed_train = False
         self.phase = random.choice([0,14])
         if self.fixed_train:
             self.dephase = 0
@@ -66,7 +66,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.step_goal = [[0,0.07],[0,-0.07]]
         for i in range(3): #Clear history with initial data
             self.history[i,:] = self.history[-1,:].copy()
-        self.kp = self.np_random.uniform(low=0.0022, high=0.0028)
+        self.kp = self.np_random.uniform(low=0.0023, high=0.0026)
         # print("reset")
         # if self.phase:
         #     self.set_new_step_goals(1)
@@ -347,9 +347,9 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         # print(distance_to_step_goals)
         self.rewards = [
             # 2.00,
-             3 * alive,
+             4 * alive,
              0.70 * progress,
-             1.20 * pose_discount,
+             2.00 * pose_discount,
              0.12 * pose_accel_discount,
              0.40 * ankle_accel_discount,
              1.00 * height_discount,

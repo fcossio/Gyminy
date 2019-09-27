@@ -22,7 +22,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.camera_follow = 0
         self.flag = 0
         self.history = np.zeros([4,67],dtype=np.float32)
-        self.fixed_train = False
+        self.fixed_train = True
         self.phase = random.choice([0,14])
         if self.fixed_train:
             self.dephase = 0
@@ -41,9 +41,9 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
     def robot_specific_reset(self):
         for j in self.ordered_joints:
             initial_vel = 0
-            if self.fixed_train:
-                for joint_name in ['RHipPitch','LHipPitch','RKneePitch', 'LHipPitch']:
-                    self.initial_joint_position[joint_name] = self.np_random.uniform(low=-0.5, high=0.5)
+            # if self.fixed_train:
+            #     for joint_name in ['RHipPitch','LHipPitch','RKneePitch', 'LHipPitch']:
+            #         self.initial_joint_position[joint_name] = self.np_random.uniform(low=-0.5, high=0.5)
 
             if(j.name in self.initial_joint_position.keys()):
                 initial_pos = self.real_position(self.initial_joint_position[j.name], j.limits()[0:2])
@@ -57,7 +57,8 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.not_feet_contact = np.array([0.0 for f in self.not_feet], dtype=np.float32)
 
         self.scene.actor_introduce(self)
-        self.initial_z = self.np_random.uniform( low=0.38, high=0.40 )
+        self.initial_z = self.np_random.uniform( low=0.39, high=0.40 )
+
         #self.initial_z = 0.45
         self.pose_history = np.array([j.current_relative_position()[0] for j in self.ordered_joints], dtype=np.float32)
         self.pose_history = np.array([self.pose_history.copy(),self.pose_history.copy(),self.pose_history.copy()])
@@ -203,13 +204,18 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         return ptsnew
     def set_new_step_goals(self, foot):
         #self.step_goal = []#[[x_right, y_right], [x_left, y_left]]
-        rnd = self.np_random.uniform( low=0.2, high=0.201 )
+        rndx = self.np_random.uniform( low=0.15, high=0.25 )
+        rndy = self.np_random.uniform( low=-0.03, high=0.03 )
         if foot:
-            x = self.step_goal[0][0]
-            self.step_goal[foot] = [rnd+x,-0.07]
+            # x = self.step_goal[0][0]
+            x = self.body_xyz[0]
+            y = self.body_xyz[1]
+            self.step_goal[foot] = [rndx + x, y + rndy -0.07]
         else:
-            x = self.step_goal[1][0]
-            self.step_goal[foot] = [rnd+x,0.07]
+            #x = self.step_goal[1][0]
+            x = self.body_xyz[0]
+            y = self.body_xyz[1]
+            self.step_goal[foot] = [rndx + x,y + rndy + 0.07]
 
     def step(self, a):
         #input()
@@ -335,6 +341,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         # print("pose_accel_discount: ",pose_accel_discount)
         height_discount = -abs(0.37 - self.body_xyz[2]) * 5
         roll_discount = -abs(self.body_rpy[1]) * 0.75
+        yaw_discount = -abs(self.body_rpy[2]) * 0.75
         joints_at_limit_cost = float(self.joints_at_limit_cost * self.joints_at_limit)
 
         # print(distance_to_step_goals)
@@ -342,11 +349,12 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             # 2.00,
              3 * alive,
              0.70 * progress,
-             1.10 * pose_discount,
+             1.20 * pose_discount,
              0.12 * pose_accel_discount,
              0.40 * ankle_accel_discount,
-             0.70 * height_discount,
+             1.00 * height_discount,
              0.50 * roll_discount,
+             0.25 * yaw_discount,
             # 0.25 * action_delta,
              0.25 * feet_parallel_to_ground,
              0.50 * np.exp(-(distance_to_step_goals**2)),

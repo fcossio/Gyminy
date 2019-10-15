@@ -129,7 +129,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.joint_speeds = j[1::2]
         #print(self.joint_speeds)
         #input()
-        self.joints_at_limit = np.count_nonzero(np.abs(j[0::2]) > 0.99)
+        self.joints_at_limit = np.count_nonzero(np.abs(j[0::2]) > 0.97)
         body_pose = self.robot_body.pose()
 
         parts_xyz = np.array( [p.pose().xyz() for p in self.parts.values()] ).flatten()
@@ -192,7 +192,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
     stall_torque_cost    = -0.1    # cost for running electric current through a motor even at zero rotational speed, small
     foot_collision_cost  = -1.0    # touches another leg, or other objects, that cost makes robot avoid smashing feet into itself
     foot_ground_object_names = set(["floor"])  # to distinguish ground and other objects
-    joints_at_limit_cost = -0.2    # discourage stuck joints
+    joints_at_limit_cost = -1    # discourage stuck joints
 
     def appendSpherical_np(self, xyz):
         ptsnew = np.hstack((xyz, np.zeros(xyz.shape)))
@@ -276,7 +276,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
                 positions.append(list(relative_pose))
                 equivalent = self.equivalents[p]
                 names.append(equivalent)
-        feet_parallel_to_ground *= 0.25
+        # feet_parallel_to_ground *= 0.25
         #print("feet_parallel_to_ground",feet_parallel_to_ground)
 
         positions = self.appendSpherical_np(np.array(positions))
@@ -302,7 +302,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             #print(names[n], delta)
             delta = np.sum(delta1) +  np.sum(delta2)
             pose_discount+=delta
-        pose_discount /= -7
+        #pose_discount /= -7
         #print(pose_discount/100)
         alive = float(self.alive_bonus(state[0]+self.initial_z, self.body_rpy[1]))   # state[0] is body height above ground, body_rpy[1] is pitch
         done = alive < 0 or (distance_to_step_goals-2)>body_pose.xyz()[0]
@@ -335,32 +335,35 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             #     parts_collision_with_ground_cost += self.foot_collision_cost
         # electricity_cost  = self.electricity_cost  * float(np.abs(a*self.joint_speeds).mean())  # let's assume we have DC motor with controller, and reverse current braking
         # electricity_cost += self.stall_torque_cost * float(np.square(a).mean())
-        pose_accel_discount = - np.sum(np.abs(self.pose_accel/65))/len(self.ordered_joints)
-        ankle_accel_discount = - np.sum(np.abs([self.pose_accel[6]/65, self.pose_accel[7]/65, self.pose_accel[12]/65, self.pose_accel[13]/65]))/8
+        pose_accel_discount = - np.sum(np.abs(self.pose_accel/15))/len(self.ordered_joints)
+        ankle_accel_discount = - np.sum(np.abs([self.pose_accel[6]/15, self.pose_accel[7]/15, self.pose_accel[12]/15, self.pose_accel[13]/15]))/8
         # print("ankle_accel_discount", ankle_accel_discount)
         # print("pose_accel_discount: ",pose_accel_discount)
-        height_discount = -abs(0.37 - self.body_xyz[2]) * 5
-        roll_discount = -abs(self.body_rpy[1]) * 0.75
-        yaw_discount = -abs(self.body_rpy[2]) * 0.75
-        joints_at_limit_cost = float(self.joints_at_limit_cost * self.joints_at_limit)
+        height_discount = -abs(0.37 - self.body_xyz[2]) * 40
+        roll_discount = -abs(self.body_rpy[1]) * 10
+        yaw_discount = -abs(self.body_rpy[2]) * 10
+        joints_at_limit_cost = self.joints_at_limit
 
         # print(distance_to_step_goals)
         self.rewards = [
-            # 2.00,
-             1 * alive,
-             0.70 * progress,
-             2.00 * np.exp(-(pose_discount**2/10)),
-             0.12 * np.exp(-(pose_accel_discount**2/10)),
-             0.40 * np.exp(-(ankle_accel_discount**2/10)),
-             1.00 * np.exp(-(height_discount**2/10)),
-             0.50 * np.exp(-(roll_discount**2/10)),
-             0.25 * np.exp(-(yaw_discount**2/10)),
+            0.40 * np.exp(-(pose_discount**2/10)),
+            0.05 * np.exp(-(pose_accel_discount**2/10)),
+            0.08 * np.exp(-(ankle_accel_discount**2/10)),
+            0.03 * np.exp(-(height_discount**2/10)),
+            0.03 * np.exp(-(roll_discount**2/10)),
+            0.03 * np.exp(-(yaw_discount**2/10)),
+            0.06 * np.exp(-(feet_parallel_to_ground**2/10)),
+            0.20 * np.exp(-(distance_to_step_goals**2)),
+            0.02 * np.exp(-(joints_at_limit_cost**2//10)),
+
+            0.05 * np.exp(-parts_collision_with_ground_cost**2/10),
+            0.05 * np.exp(-feet_collision_cost**2/10)
+
             # 0.25 * action_delta,
-             0.25 * np.exp(-(feet_parallel_to_ground**2/10)),
-             2.00 * np.exp(-(distance_to_step_goals**2//10)),
-             0.35 * parts_collision_with_ground_cost,
-            # joints_at_limit_cost,
-            feet_collision_cost
+            # 2.00,
+            # 1 * alive,
+            # 0.70 * progress,
+
             ]
         self.frame  += 1
         self.phase = (self.phase + 1)%30

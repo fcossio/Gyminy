@@ -91,7 +91,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
                 'LWristYaw','RWristYaw',
                 'LHand','RHand',
                 'LShoulderPitch','RShoulderPitch',
-                'LShoulderRoll', 'RShoulderRoll',
+                # 'LShoulderRoll', 'RShoulderRoll',
                 'LElbowYaw', 'RElbowYaw',
                 'LElbowRoll','RElbowRoll',
                 # 'LHipYawPitch',
@@ -327,6 +327,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         for i,f in enumerate(self.not_feet):
             contact_names = set(x.name for x in f.contact_list())
             if 'floor' in contact_names:
+                done = True
                 parts_collision_with_ground_cost-=1;
                 if f.name == 'Head':
                     parts_collision_with_ground_cost-=2;
@@ -347,17 +348,16 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
 
         # print(distance_to_step_goals)
         self.rewards = [
-            0.40 * np.exp(-(pose_discount**2/10)),
+            0.38 * np.exp(-(pose_discount**2/10)),
             0.08 * np.exp(-(pose_accel_discount**2/10)),
-            0.11 * np.exp(-(ankle_accel_discount**2/10)),
-            0.01 * np.exp(-(height_discount**2/10)),
-            0.01 * np.exp(-(roll_discount**2/10)),
-            0.01 * np.exp(-(yaw_discount**2/10)),
+            0.16 * np.exp(-(ankle_accel_discount**2/10)),
+            0.02 * np.exp(-(height_discount**2/10)),
+            0.02 * np.exp(-(roll_discount**2/10)),
+            0.01 * np.exp(-(yaw_discount**2/20)),
             0.06 * np.exp(-(feet_parallel_to_ground**2/10)),
             0.20 * np.exp(-(distance_to_step_goals**2)),
             0.02 * np.exp(-(joints_at_limit_cost**2//10)),
-
-            0.05 * np.exp(-parts_collision_with_ground_cost**2/10),
+            #0.05 * np.exp(-parts_collision_with_ground_cost**2/10),
             0.05 * np.exp(-feet_collision_cost**2/10)
 
             # 0.25 * action_delta,

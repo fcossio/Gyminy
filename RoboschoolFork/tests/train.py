@@ -37,7 +37,7 @@ policy_kwargs = dict(
     #act_fun=activation_function,
     net_arch = net_arch)
 model = PPO2(MlpPolicy, env, verbose=2,
-    tensorboard_log="./exponential_rewards",
+    #tensorboard_log="./exponential_rewards",
     learning_rate = 0.00025,
     nminibatches = n_cpu,
     n_steps = 128,

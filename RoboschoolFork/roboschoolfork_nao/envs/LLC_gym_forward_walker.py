@@ -22,7 +22,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.camera_follow = 0
         self.flag = 0
         self.history = np.zeros([4,67],dtype=np.float32)
-        self.fixed_train = True
+        self.fixed_train = False
         self.phase = random.choice([0,14])
         if self.fixed_train:
             self.dephase = 0
@@ -161,26 +161,27 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             self.body_xyz[1] - self.step_goal[1][1],
             r, p], dtype=np.float32)
         obs = np.clip( np.concatenate([more] + [j] + [self.feet_contact]), -5, +5)
-        #print("obs len:",len(obs))
-        # phase_bilinear_transform = np.zeros([4,np.size(obs)], dtype=np.float32)
-        # phase = 0
-        # if self.phase < 7:
-        #     phase = 0
-        # elif self.phase < 15:
-        #     phase = 1
-        # elif self.phase < 22:
-        #     phase = 2
-        # else:
-        #     phase = 3
-        # phase_bilinear_transform[phase,:] = obs
-        # phase_bilinear_transform = phase_bilinear_transform.flatten()
-        # obs = phase_bilinear_transform
         self.history[0,:] = self.history[1,:].copy()
         self.history[1,:] = self.history[2,:].copy()
         self.history[2,:] = self.history[3,:].copy()
         self.history[3,:] = obs
-        parts_acceleration = self.history[3,[0]]
         obs = self.history.flatten()
+        #print("obs len:",len(obs))
+        phase_bilinear_transform = np.zeros([4,np.size(obs)], dtype=np.float32)
+        phase = 0
+        if self.phase < 7:
+            phase = 0
+        elif self.phase < 15:
+            phase = 1
+        elif self.phase < 22:
+            phase = 2
+        else:
+            phase = 3
+        phase_bilinear_transform[phase,:] = obs
+        phase_bilinear_transform = phase_bilinear_transform.flatten()
+        obs = phase_bilinear_transform
+
+        parts_acceleration = self.history[3,[0]]
         return obs
 
     def calc_potential(self):

@@ -205,7 +205,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         return ptsnew
     def set_new_step_goals(self, foot):
         #self.step_goal = []#[[x_right, y_right], [x_left, y_left]]
-        rndx = self.np_random.uniform( low=0.15, high=0.25 )
+        rndx = self.np_random.uniform( low=0.10, high=0.20 )
         rndy = self.np_random.uniform( low=-0.03, high=0.03 )
         if foot:
             # x = self.step_goal[0][0]

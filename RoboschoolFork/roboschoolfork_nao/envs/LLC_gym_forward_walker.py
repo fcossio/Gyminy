@@ -208,13 +208,13 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         rndx = self.np_random.uniform( low=0.10, high=0.20 )
         rndy = self.np_random.uniform( low=-0.03, high=0.03 )
         if foot:
-            # x = self.step_goal[0][0]
-            x = self.body_xyz[0]
+            x = self.step_goal[0][0]
+            # x = self.body_xyz[0]
             y = self.body_xyz[1]
             self.step_goal[foot] = [rndx + x, y + rndy -0.07]
         else:
-            #x = self.step_goal[1][0]
-            x = self.body_xyz[0]
+            x = self.step_goal[1][0]
+            # x = self.body_xyz[0]
             y = self.body_xyz[1]
             self.step_goal[foot] = [rndx + x,y + rndy + 0.07]
 
@@ -229,8 +229,8 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
 
         state = self.calc_state()  # also calculates self.joints_at_limit
 
-        if self.phase%15 == 0:
-            if self.phase >14:
+        if (self.phase+3) %15 == 0:
+            if (self.phase+3) >14:
                 self.rand_animation = random.choice([self.animations[0], self.animations[4]])
                 if self.fixed_train:
                     self.rand_animation = self.animations[0]

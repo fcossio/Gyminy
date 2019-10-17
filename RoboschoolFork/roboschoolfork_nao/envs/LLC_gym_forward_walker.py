@@ -84,6 +84,8 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             #j.set_motor_torque( self.power*j.power_coef*float(np.clip(a[n], -1, +1)) )
             target = self.real_position(a[n],j.limits()[0:2])
             actual = j.current_relative_position()
+            if abs(a[n]) >= 1:
+                delta += 1
             delta += abs(max(a[n], actual[0]) - min(a[n],actual[0]))
             #print(j.name,j.power_coef)
             #freeze arms

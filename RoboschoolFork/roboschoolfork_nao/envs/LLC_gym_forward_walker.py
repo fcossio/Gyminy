@@ -57,7 +57,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.not_feet_contact = np.array([0.0 for f in self.not_feet], dtype=np.float32)
 
         self.scene.actor_introduce(self)
-        self.initial_z = self.np_random.uniform( low=0.39, high=0.40 )
+        self.initial_z = self.np_random.uniform( low=0.39, high=0.40 ) + 0.1
 
         #self.initial_z = 0.45
         self.pose_history = np.array([j.current_relative_position()[0] for j in self.ordered_joints], dtype=np.float32)

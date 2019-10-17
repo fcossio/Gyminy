@@ -357,7 +357,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             0.02 * np.exp(-(roll_discount**2/10)),
             0.01 * np.exp(-(yaw_discount**2/20)),
             0.06 * np.exp(-(feet_parallel_to_ground**2/10)),
-            0.20 * np.exp(-(distance_to_step_goals**2)),
+            #0.20 * np.exp(-(distance_to_step_goals**2)),
             0.02 * np.exp(-(joints_at_limit_cost**2//10)),
             0.05 * np.exp(-parts_collision_with_ground_cost**2/10),
             0.05 * np.exp(-feet_collision_cost**2/10),

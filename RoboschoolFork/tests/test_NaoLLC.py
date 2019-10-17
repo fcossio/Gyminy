@@ -54,6 +54,8 @@ for i in range(5000):
     action = np.array(list(INITIAL_MOTOR_POS.values()))
     action[10] = hip
     action[4] = -hip
+    action[11] = hip
+    action[5] = -hip
     obs, rewards, dones, info = env.step(action)
     #obs, rewards, dones, info = env.step(env.action_space.sample())
     print(rewards)

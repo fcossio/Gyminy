@@ -66,7 +66,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.step_goal = [[0,0.07],[0,-0.07]]
         for i in range(3): #Clear history with initial data
             self.history[i,:] = self.history[-1,:].copy()
-        self.kp = self.np_random.uniform(low=0.0023, high=0.0026)
+        self.kp = self.np_random.uniform(low=0.0028, high=0.0029)
         # print("reset")
         # if self.phase:
         #     self.set_new_step_goals(1)
@@ -84,7 +84,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             #j.set_motor_torque( self.power*j.power_coef*float(np.clip(a[n], -1, +1)) )
             target = self.real_position(a[n],j.limits()[0:2])
             actual = j.current_relative_position()
-            delta += abs(max(a[n], actual[0]) - min(a[n],actual[0])) * -1.5
+            delta += abs(max(a[n], actual[0]) - min(a[n],actual[0]))
             #print(j.name,j.power_coef)
             #freeze arms
             freezed =["HeadPitch","HeadYaw",
@@ -104,10 +104,10 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
                 # 'RKneePitch',
                 ]
             if j.name not in freezed:
-                j.set_servo_target(target,self.kp,0.08,self.power*j.power_coef)
+                 j.set_servo_target(target,self.kp,0.10,self.power*j.power_coef)
                 #j.set_motor_torque( self.power*j.power_coef*float(np.clip(a[n], -1, +1)) )
         #print(delta)
-        return delta/len(self.ordered_joints)
+        return delta
     # def get_action_position_distance(self, action):
     #     j = np.array([j.current_relative_position() for j in self.ordered_joints], dtype=np.float32)
     #     a = np.array(real_pos(action[])
@@ -347,7 +347,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         roll_discount = -abs(self.body_rpy[1]) * 10
         yaw_discount = -abs(self.body_rpy[2]) * 10
         joints_at_limit_cost = self.joints_at_limit
-
+        #print(action_delta)
         # print(distance_to_step_goals)
         self.rewards = [
             0.38 * np.exp(-(pose_discount**2/10)),
@@ -359,9 +359,10 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             0.06 * np.exp(-(feet_parallel_to_ground**2/10)),
             0.20 * np.exp(-(distance_to_step_goals**2)),
             0.02 * np.exp(-(joints_at_limit_cost**2//10)),
-            #0.05 * np.exp(-parts_collision_with_ground_cost**2/10),
-            0.05 * np.exp(-feet_collision_cost**2/10)
-
+            0.05 * np.exp(-parts_collision_with_ground_cost**2/10),
+            0.05 * np.exp(-feet_collision_cost**2/10),
+            #bonus to try to avoid exploding actions
+            0.10 * 1/(1+np.exp((action_delta-10)/2))
             # 0.25 * action_delta,
             # 2.00,
             # 1 * alive,

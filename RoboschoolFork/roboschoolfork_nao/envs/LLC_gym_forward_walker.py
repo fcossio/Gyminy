@@ -22,7 +22,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.camera_follow = 0
         self.flag = 0
         self.history = np.zeros([4,67],dtype=np.float32)
-        self.fixed_train = False
+        self.fixed_train = True
         self.phase = random.choice([0,14])
         if self.fixed_train:
             self.dephase = 0
@@ -308,7 +308,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         #pose_discount /= -7
         #print(pose_discount/100)
         alive = float(self.alive_bonus(state[0]+self.initial_z, self.body_rpy[1]))   # state[0] is body height above ground, body_rpy[1] is pitch
-        done = alive < 0 or (distance_to_step_goals-2)>body_pose.xyz()[0]
+        done = alive < 0 or ((distance_to_step_goals-2)>body_pose.xyz()[0] and not self.fixed_train)
         if not np.isfinite(state).all():
             print("~INF~", state)
             done = True
@@ -373,7 +373,8 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.phase = (self.phase + 1)%30
         if self.fixed_train:
             if (self.phase - self.dephase) % 15 == 0:#For pretrain gait cycle
-                done = 1
+                #done = 1
+                None
         if (done and not self.done) or self.frame==self.spec.max_episode_steps:
             self.phase = random.choice([0,15])
             if self.fixed_train:

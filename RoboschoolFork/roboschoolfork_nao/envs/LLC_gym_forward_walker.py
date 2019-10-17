@@ -106,8 +106,8 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
                 # 'RKneePitch',
                 ]
             if j.name not in freezed:
-                # j.set_servo_target(target,self.kp,0.10,self.power*j.power_coef)
-                j.set_motor_torque( self.power*j.power_coef*float(np.clip(a[n], -1, +1)) )
+                j.set_servo_target(target,self.kp,0.10,self.power*j.power_coef)
+                # j.set_motor_torque( self.power*j.power_coef*float(np.clip(a[n], -1, +1)) )
         #print(delta)
         return delta
     # def get_action_position_distance(self, action):
@@ -363,10 +363,10 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             0.06 * np.exp(-(feet_parallel_to_ground**2/10)),
             #0.20 * np.exp(-(distance_to_step_goals**2)),
             0.02 * np.exp(-(joints_at_limit_cost**2//10)),
-            0.05 * np.exp(-parts_collision_with_ground_cost**2/10),
+            # 0.05 * np.exp(-parts_collision_with_ground_cost**2/10),
             0.05 * np.exp(-feet_collision_cost**2/10),
             #bonus to try to avoid exploding actions
-            0.10 * 1/(1+np.exp((action_delta-10)/2))
+            0.25 * 1/(1+np.exp((action_delta-10)/2))
             # 0.25 * action_delta,
             # 2.00,
             # 1 * alive,

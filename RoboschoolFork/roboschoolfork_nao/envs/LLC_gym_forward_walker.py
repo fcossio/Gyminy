@@ -296,9 +296,11 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             # if (self.phase%30 > 14):
             #     pos[0] *= -1
             #     pos[1] *= -1
-            pos[0] += expected_x + (self.phase%15)/30 * 0.4 - 0.1 #body_pose.xyz()[0]
+            #pos[0] += expected_x + (self.phase%15)/30 * 0.4 - 0.1 #body_pose.xyz()[0]
             pos[1] += 0
-            pos[2] += 0.4 #body_pose.xyz()[2]
+            pos[1] += 0
+            #pos[2] += 0.4 #body_pose.xyz()[2]
+            pos[2] += body_pose.xyz()[2]
             self.flag.append(self.scene.cpp_world.debug_sphere(pos[0], pos[1], pos[2], 0.02, 0xFF1010))
             delta1 = abs(positions[n,[5]] - self.rand_animation[names[n]][self.phase%15,[5]])
             delta2 = abs(positions[n,[4]] - self.rand_animation[names[n]][self.phase%15,[4]])*0.25
@@ -351,7 +353,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         # print(distance_to_step_goals)
         self.rewards = [
             0.38 * np.exp(-(pose_discount**2/10)),
-            0.08 * np.exp(-(pose_accel_discount**2/10)),
+            0.08 * np.exp(-(pose_accel_discount**2/5)),
             0.16 * np.exp(-(ankle_accel_discount**2/10)),
             0.02 * np.exp(-(height_discount**2/10)),
             0.02 * np.exp(-(roll_discount**2/10)),

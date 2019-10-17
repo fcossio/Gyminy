@@ -94,9 +94,8 @@ for filename in file_names:
         a = a - spine
 
         a[:, 1], a[:, 2] = a[:, 2], a[:, 1].copy()#swap y and z because axis are different in roboschool
-        a[:, 1] = a[:,1] * 1.3  #make everything a bit wider
         a[:, 0], a[:, 1] = a[:, 1], a[:, 0].copy()#swap x and y because axis are different in roboschool
-
+        a[:, 1] = a[:,1] * 3  #make everything a bit wider
         important_paths[part_name] = list(appendSpherical_np(a).tolist())
     InterpolatedWalkAnimations.append(important_paths)
 

@@ -289,7 +289,9 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         for n in range(len(names)):
             x1,y1,z1 = body_pose.xyz()
             r,p,yaw = body_pose.rpy()
-            pos = self.polar2cart( positions[n,3],
+            #print(positions[n,3],float(self.rand_animation[ names[n] ][ self.phase%15,[3] ])/370)
+            pos = self.polar2cart(
+                float(self.rand_animation[ names[n] ][ self.phase%15,[3] ])/375,#positions[n,3],
                 self.rand_animation[ names[n] ][ self.phase%15,[4] ],
                 self.rand_animation[ names[n] ][ self.phase%15,[5] ]
                 )
@@ -302,10 +304,14 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             #pos[2] += 0.4 #body_pose.xyz()[2]
             pos[2] += body_pose.xyz()[2]
             self.flag.append(self.scene.cpp_world.debug_sphere(pos[0], pos[1], pos[2], 0.02, 0xFF1010))
+            if names[n] in ['mixamorig_RightToeBase','mixamorig_LeftToeBase']:
+                delta0 = abs(float(self.rand_animation[ names[n] ][ self.phase%15,[3] ])/375 - positions[n,3])*10
+            else:
+                delta0 = 0;
             delta1 = abs(positions[n,[5]] - self.rand_animation[names[n]][self.phase%15,[5]])
             delta2 = abs(positions[n,[4]] - self.rand_animation[names[n]][self.phase%15,[4]])*0.25
-            #print(names[n], delta)
-            delta = np.sum(delta1) +  np.sum(delta2)
+            print(delta0)
+            delta = np.sum(delta0) + np.sum(delta1) +  np.sum(delta2)
             pose_discount+=delta
         #pose_discount /= -7
         #print(pose_discount/100)

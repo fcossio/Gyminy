@@ -352,13 +352,14 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         #print(action_delta)
         # print(distance_to_step_goals)
         self.rewards = [
-            0.50 * np.exp(-(pose_discount**2/10)),
-            0.50 * np.exp(-(pose_accel_discount**2/20)),
-            # 0.16 * np.exp(-(ankle_accel_discount**2/10)),
+            0.40 * np.exp(-(pose_discount**2/10)),
+            0.40 * np.exp(-(pose_accel_discount**2/20)),
+            0.10 * np.exp(-(ankle_accel_discount**2/10)),
+            0.10 * np.exp(-(feet_parallel_to_ground**2/10)),
             # 0.02 * np.exp(-(height_discount**2/10)),
             # 0.02 * np.exp(-(roll_discount**2/10)),
             # 0.01 * np.exp(-(yaw_discount**2/20)),
-            # 0.06 * np.exp(-(feet_parallel_to_ground**2/10)),
+
             # #0.20 * np.exp(-(distance_to_step_goals**2)),
             # 0.02 * np.exp(-(joints_at_limit_cost**2//10)),
             # # 0.05 * np.exp(-parts_collision_with_ground_cost**2/10),

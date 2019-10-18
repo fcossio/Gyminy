@@ -293,7 +293,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             pos = self.polar2cart(
                 float(self.rand_animation[ names[n] ][ self.phase%15,[3] ])/375,#positions[n,3],
                 self.rand_animation[ names[n] ][ self.phase%15,[4] ],
-                self.rand_animation[ names[n] ][ self.phase%15,[5] ]
+                self.rand_animation[ names[n] ][ self.phase%15,[5] ] - r
                 )
             # if (self.phase%30 > 14):
             #     pos[0] *= -1
@@ -301,14 +301,14 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             #pos[0] += expected_x + (self.phase%15)/30 * 0.4 - 0.1 #body_pose.xyz()[0]
             pos[1] += 0
             pos[1] += 0
-            #pos[2] += 0.4 #body_pose.xyz()[2]
-            pos[2] += body_pose.xyz()[2]
+            pos[2] += 0.4
+            #pos[2] += body_pose.xyz()[2]
             self.flag.append(self.scene.cpp_world.debug_sphere(pos[0], pos[1], pos[2], 0.02, 0xFF1010))
             if names[n] in ['mixamorig_RightToeBase','mixamorig_LeftToeBase']:
                 delta0 = abs(float(self.rand_animation[ names[n] ][ self.phase%15,[3] ])/375 - positions[n,3])*10
             else:
                 delta0 = 0;
-            delta1 = abs(positions[n,[5]] - self.rand_animation[names[n]][self.phase%15,[5]])
+            delta1 = abs(positions[n,[5]] - self.rand_animation[names[n]][self.phase%15,[5]] - r)
             delta2 = abs(positions[n,[4]] - self.rand_animation[names[n]][self.phase%15,[4]])*0.25
             delta = np.sum(delta0) + np.sum(delta1) +  np.sum(delta2)
             pose_discount+=delta
@@ -351,19 +351,21 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         # print("ankle_accel_discount", ankle_accel_discount)
         # print("pose_accel_discount: ",pose_accel_discount)
         height_discount = -abs(0.37 - self.body_xyz[2]) * 40
-        roll_discount = -abs(self.body_rpy[1]) * 10
+        roll_discount = -abs(self.body_rpy[0]) * 10
+        pitch_discount = -abs(self.body_rpy[1]) * 10
         yaw_discount = -abs(self.body_rpy[2]) * 10
         joints_at_limit_cost = self.joints_at_limit
         #print(action_delta)
         # print(distance_to_step_goals)
         self.rewards = [
-            0.30 * np.exp(-(pose_discount**2/10)),
-            0.30 * np.exp(-(pose_accel_discount**2/20)),
-            0.075 * np.exp(-(ankle_accel_discount**2/10)),
-            0.075 * np.exp(-(feet_parallel_to_ground**2/10)),
-            0.02 * np.exp(-(height_discount**2/10)),
-            0.02 * np.exp(-(roll_discount**2/10)),
-            0.01 * np.exp(-(yaw_discount**2/20)),
+            # 0.30 * np.exp(-(pose_discount**2/10)),
+            # 0.30 * np.exp(-(pose_accel_discount**2/20)),
+            # 0.075 * np.exp(-(ankle_accel_discount**2/10)),
+            # 0.075 * np.exp(-(feet_parallel_to_ground**2/10)),
+            # 0.02 * np.exp(-(height_discount**2/10)),
+            # 0.02 * np.exp(-(pitch_discount**2/10)),
+            # 0.01 * np.exp(-(yaw_discount**2/20)),
+            0.10 * np.exp(-(roll_discount**2/10)),
             0.20 * np.exp(-(distance_to_step_goals**2)),
             # 0.02 * np.exp(-(joints_at_limit_cost**2//10)),
             # # 0.05 * np.exp(-parts_collision_with_ground_cost**2/10),

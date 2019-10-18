@@ -22,7 +22,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.camera_follow = 0
         self.flag = 0
         self.history = np.zeros([4,67],dtype=np.float32)
-        self.fixed_train = True
+        self.fixed_train = False
         self.phase = random.choice([0,14])
         if self.fixed_train:
             self.dephase = 0
@@ -57,7 +57,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.not_feet_contact = np.array([0.0 for f in self.not_feet], dtype=np.float32)
 
         self.scene.actor_introduce(self)
-        self.initial_z = self.np_random.uniform( low=0.39, high=0.40 ) + 0.1
+        self.initial_z = self.np_random.uniform( low=0.39, high=0.40 )
 
         #self.initial_z = 0.45
         self.pose_history = np.array([j.current_relative_position()[0] for j in self.ordered_joints], dtype=np.float32)
@@ -310,7 +310,6 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
                 delta0 = 0;
             delta1 = abs(positions[n,[5]] - self.rand_animation[names[n]][self.phase%15,[5]])
             delta2 = abs(positions[n,[4]] - self.rand_animation[names[n]][self.phase%15,[4]])*0.25
-            print(delta0)
             delta = np.sum(delta0) + np.sum(delta1) +  np.sum(delta2)
             pose_discount+=delta
         #pose_discount /= -7

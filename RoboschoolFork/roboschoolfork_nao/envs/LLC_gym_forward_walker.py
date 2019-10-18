@@ -84,8 +84,6 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             #j.set_motor_torque( self.power*j.power_coef*float(np.clip(a[n], -1, +1)) )
             target = self.real_position(a[n],j.limits()[0:2])
             actual = j.current_relative_position()
-            if abs(a[n]) >= 1:
-                delta += 1
             delta += abs(max(a[n], actual[0]) - min(a[n],actual[0]))
             #print(j.name,j.power_coef)
             #freeze arms
@@ -354,19 +352,19 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         #print(action_delta)
         # print(distance_to_step_goals)
         self.rewards = [
-            0.38 * np.exp(-(pose_discount**2/10)),
-            0.08 * np.exp(-(pose_accel_discount**2/5)),
-            0.16 * np.exp(-(ankle_accel_discount**2/10)),
-            0.02 * np.exp(-(height_discount**2/10)),
-            0.02 * np.exp(-(roll_discount**2/10)),
-            0.01 * np.exp(-(yaw_discount**2/20)),
-            0.06 * np.exp(-(feet_parallel_to_ground**2/10)),
-            #0.20 * np.exp(-(distance_to_step_goals**2)),
-            0.02 * np.exp(-(joints_at_limit_cost**2//10)),
-            # 0.05 * np.exp(-parts_collision_with_ground_cost**2/10),
-            0.05 * np.exp(-feet_collision_cost**2/10),
+            0.50 * np.exp(-(pose_discount**2/10)),
+            # 0.08 * np.exp(-(pose_accel_discount**2/5)),
+            # 0.16 * np.exp(-(ankle_accel_discount**2/10)),
+            # 0.02 * np.exp(-(height_discount**2/10)),
+            # 0.02 * np.exp(-(roll_discount**2/10)),
+            # 0.01 * np.exp(-(yaw_discount**2/20)),
+            # 0.06 * np.exp(-(feet_parallel_to_ground**2/10)),
+            # #0.20 * np.exp(-(distance_to_step_goals**2)),
+            # 0.02 * np.exp(-(joints_at_limit_cost**2//10)),
+            # # 0.05 * np.exp(-parts_collision_with_ground_cost**2/10),
+            # 0.05 * np.exp(-feet_collision_cost**2/10),
             #bonus to try to avoid exploding actions
-            0.25 * 1/(1+np.exp((action_delta-10)/2))
+            0.50 * 1/(1+np.exp((action_delta-15)/2))
             # 0.25 * action_delta,
             # 2.00,
             # 1 * alive,

@@ -330,8 +330,10 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             pos[2] += center_xyz[2]#z1
             #pos[2] += body_pose.xyz()[2]
             self.flag.append(self.scene.cpp_world.debug_sphere(pos[0], pos[1], pos[2], 0.02, 0xFF1010))
-
-            delta0 = abs(point[3]/375 - positions[n,3])*10
+            if names[n] in ["mixamorig_RightToeBase","mixamorig_LeftToeBase"]:
+                delta0 = abs(point[3]/375 - positions[n,3])*10
+            else:
+                delta0 = 0
             delta1 = abs(positions[n,[5]] - point[5])
             delta2 = abs(positions[n,[4]] - point[4])
             #print(names[n],delta1,delta2)

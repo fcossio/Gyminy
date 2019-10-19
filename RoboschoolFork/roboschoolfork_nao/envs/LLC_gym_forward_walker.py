@@ -334,7 +334,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
                 delta0 = abs(point[3]/375 - positions[n,3])*10
             else:
                 delta0 = 0
-            delta1 = abs(positions[n,[5]] - point[5])
+            delta1 = abs(positions[n,[5]] - point[5])*0.5
             delta2 = abs(positions[n,[4]] - point[4])
             #print(names[n],delta1,delta2)
             delta = np.sum(delta0) + np.sum(delta1) +  np.sum(delta2)

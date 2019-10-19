@@ -22,7 +22,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.camera_follow = 0
         self.flag = 0
         self.history = np.zeros([4,67],dtype=np.float32)
-        self.fixed_train = False
+        self.fixed_train = True
         self.phase = random.choice([0,14])
         if self.fixed_train:
             self.dephase = 0
@@ -384,10 +384,10 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         #print(action_delta)
         # print(distance_to_step_goals)
         self.rewards = [
-            0.25 * np.exp(-(pose_discount**2/10)),
-            # 0.30 * np.exp(-(pose_accel_discount**2/20)),
-            # 0.05 * np.exp(-(ankle_accel_discount**2/10)),
-            # 0.05 * np.exp(-(feet_parallel_to_ground**2/10)),
+            0.30 * np.exp(-(pose_discount**2/10)),
+            0.30 * np.exp(-(pose_accel_discount**2/20)),
+            0.05 * np.exp(-(ankle_accel_discount**2/10)),
+            0.05 * np.exp(-(feet_parallel_to_ground**2/10)),
             # 0.02 * np.exp(-(height_discount**2/10)),
             # 0.02 * np.exp(-(pitch_discount**2/10)),
             # 0.01 * np.exp(-(yaw_discount**2/20)),

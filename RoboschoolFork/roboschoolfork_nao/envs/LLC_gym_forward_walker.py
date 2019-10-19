@@ -22,7 +22,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.camera_follow = 0
         self.flag = 0
         self.history = np.zeros([4,67],dtype=np.float32)
-        self.fixed_train = True
+        self.fixed_train = False
         self.phase = random.choice([0,14])
         if self.fixed_train:
             self.dephase = 0
@@ -209,13 +209,13 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         rndy = self.np_random.uniform( low=-0.03, high=0.03 )
         if foot:
             x = self.step_goal[0][0]
-            # x = self.body_xyz[0]
+            x = self.body_xyz[0]
             # y = self.body_xyz[1]
             y = 0
             self.step_goal[foot] = [rndx + x, y + rndy -0.07]
         else:
             x = self.step_goal[1][0]
-            # x = self.body_xyz[0]
+            x = self.body_xyz[0]
             #y = self.body_xyz[1]
             y = 0
             self.step_goal[foot] = [rndx + x,y + rndy + 0.07]
@@ -385,18 +385,18 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         #print(action_delta)
         # print(distance_to_step_goals)
         self.rewards = [
-            0.30 * np.exp(-(pose_discount**2/10)),
-            0.30 * np.exp(-(pose_accel_discount**2/20)),
+            0.25 * np.exp(-(pose_discount**2/10)),
+            0.25 * np.exp(-(pose_accel_discount**2/20)),
             0.05 * np.exp(-(ankle_accel_discount**2/10)),
             0.05 * np.exp(-(feet_parallel_to_ground**2/10)),
-            # 0.02 * np.exp(-(height_discount**2/10)),
-            # 0.02 * np.exp(-(pitch_discount**2/10)),
-            # 0.01 * np.exp(-(yaw_discount**2/20)),
-            # 0.10 * np.exp(-(roll_discount**2/10)),
-            # 0.20 * np.exp(-(distance_to_step_goals**2)),
-            # 0.02 * np.exp(-(joints_at_limit_cost**2//10)),
-            # # 0.05 * np.exp(-parts_collision_with_ground_cost**2/10),
-            # 0.05 * np.exp(-feet_collision_cost**2/10),
+            0.02 * np.exp(-(height_discount**2/10)),
+            0.02 * np.exp(-(pitch_discount**2/10)),
+            0.01 * np.exp(-(yaw_discount**2/20)),
+            0.08 * np.exp(-(roll_discount**2/10)),
+            0.20 * np.exp(-(distance_to_step_goals**2)),
+            0.02 * np.exp(-(joints_at_limit_cost**2//10)),
+            # 0.05 * np.exp(-parts_collision_with_ground_cost**2/10),
+            0.05 * np.exp(-feet_collision_cost**2/10),
             #bonus to try to avoid exploding actions
             # 0.50 * 1/(1+np.exp((action_delta-15)/2))
             # 0.25 * action_delta,

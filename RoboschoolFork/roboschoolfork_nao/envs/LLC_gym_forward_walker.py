@@ -57,7 +57,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.not_feet_contact = np.array([0.0 for f in self.not_feet], dtype=np.float32)
 
         self.scene.actor_introduce(self)
-        self.initial_z = self.np_random.uniform( low=0.39, high=0.40 )
+        self.initial_z = self.np_random.uniform( low=0.39, high=0.40 )+0.1
 
         #self.initial_z = 0.45
         self.pose_history = np.array([j.current_relative_position()[0] for j in self.ordered_joints], dtype=np.float32)
@@ -257,7 +257,13 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         names = []
         feet_parallel_to_ground = 0
         distance_to_step_goals = 0
-        for p in sorted(list(self.parts.keys())):
+        center_xyz = np.mean([self.parts["RPelvis"].pose().xyz(),self.parts["LPelvis"].pose().xyz()], axis=0)
+        center_rpy = np.mean([self.parts["RPelvis"].pose().rpy(),self.parts["LPelvis"].pose().rpy()], axis=0)
+        #self.flag.append(self.scene.cpp_world.debug_sphere(center_xyz[0], center_xyz[1], center_xyz[2], 0.05, 0x10FF10))
+        #print(center_xyz,center_rpy)
+        parts_list = self.parts
+        parts_list['spine'] = self.robot_body
+        for p in sorted(list(parts_list.keys())):
             if p in ["r_ankle","l_ankle"]:
                 a_r, a_p, a_yaw = self.parts[p].pose().rpy()
                 #print(p, round(a_r,2), round(a_p,2))
@@ -265,7 +271,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
                 a_x, a_y, a_z = self.parts[p].pose().xyz()
                 distance_to_step_goals += (np.sqrt((a_x - self.step_goal[0][0])**2 + (a_y - self.step_goal[0][1])**2))
                 distance_to_step_goals += (np.sqrt((a_x - self.step_goal[1][0])**2 + (a_y - self.step_goal[1][1])**2))
-            if(p in ["RTibia","LTibia","r_ankle","l_ankle"]):
+            if(p in ["RTibia","LTibia","r_ankle","l_ankle", "spine"]):
                 # x1,y1,z1 = body_pose.xyz()
                 # x2,y2,z2 = self.parts[p].pose().xyz()
                 # balls = 10
@@ -275,8 +281,8 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
                 #     zs2 = (z2 - z1)*i/balls + z1
                 #     self.flag.append(self.scene.cpp_world.debug_sphere(xs2, ys2, zs2, 0.01, 0x101567781871.1178284.pklFF10))
                 # self.flag.append(self.scene.cpp_world.debug_sphere(x2, y2, z2, 0.03, 0x10FF10))
-                relative_pose = np.array(self.parts[p].pose().xyz()) - np.array(body_pose.xyz())
-                positions.append(list(relative_pose))
+                rotated_xyz = self.rotate_point(np.array(self.parts[p].pose().xyz())-center_xyz, [0,0,center_rpy[0]])
+                positions.append(list(rotated_xyz))
                 equivalent = self.equivalents[p]
                 names.append(equivalent)
         # feet_parallel_to_ground *= 0.25
@@ -287,33 +293,53 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         pose_discount = 0
         expected_x = (self.step_goal[0][0] + self.step_goal[1][0])/2
         for n in range(len(names)):
-            x1,y1,z1 = body_pose.xyz()
-            r,p,yaw = body_pose.rpy()
+            x1,y1,z1 = center_xyz
+            r,p,yaw = center_rpy
             #print(positions[n,3],float(self.rand_animation[ names[n] ][ self.phase%15,[3] ])/370)
+            point=np.array([
+                self.rand_animation[ names[n] ][ self.phase%15,[0] ][0],
+                self.rand_animation[ names[n] ][ self.phase%15,[1] ][0],
+                self.rand_animation[ names[n] ][ self.phase%15,[2] ][0]
+            ])
+            point = np.array([self.rotate_point(point, [0,0,r])])
+            point = np.array(self.appendSpherical_np(point).flatten())
             pos = self.polar2cart(
-                float(self.rand_animation[ names[n] ][ self.phase%15,[3] ])/375,#positions[n,3],
-                self.rand_animation[ names[n] ][ self.phase%15,[4] ],
-                self.rand_animation[ names[n] ][ self.phase%15,[5] ] - r
-                )
+                point[3]/375,#positions[n,3],
+                point[4],
+                point[5]
+            )
+            pos2 = self.polar2cart(
+                positions[n,3],#positions[n,3],
+                positions[n,4],
+                positions[n,5]
+            )
+            pos2[1]+=0.25
+            pos2[2]+= center_xyz[2]
+            self.flag.append(self.scene.cpp_world.debug_sphere(pos2[0], pos2[1], pos2[2], 0.02, 0xFF10FF))
+            # pos = self.polar2cart(
+            #     float(self.rand_animation[ names[n] ][ self.phase%15,[3] ])/375,#positions[n,3],
+            #     self.rand_animation[ names[n] ][ self.phase%15,[4] ],
+            #     self.rand_animation[ names[n] ][ self.phase%15,[5] ] - r
+            #     )
             # if (self.phase%30 > 14):
             #     pos[0] *= -1
             #     pos[1] *= -1
             #pos[0] += expected_x + (self.phase%15)/30 * 0.4 - 0.1 #body_pose.xyz()[0]
-            pos[1] += 0
-            pos[1] += 0
-            pos[2] += 0.4
+            pos[0] += 0#x1
+            pos[1] += 0.5#y1
+            pos[2] += center_xyz[2]#z1
             #pos[2] += body_pose.xyz()[2]
             self.flag.append(self.scene.cpp_world.debug_sphere(pos[0], pos[1], pos[2], 0.02, 0xFF1010))
-            if names[n] in ['mixamorig_RightToeBase','mixamorig_LeftToeBase']:
-                delta0 = abs(float(self.rand_animation[ names[n] ][ self.phase%15,[3] ])/375 - positions[n,3])*10
-            else:
-                delta0 = 0;
-            delta1 = abs(positions[n,[5]] - self.rand_animation[names[n]][self.phase%15,[5]] - r)
-            delta2 = abs(positions[n,[4]] - self.rand_animation[names[n]][self.phase%15,[4]])*0.25
+
+            delta0 = abs(point[3]/375 - positions[n,3])*10
+            delta1 = abs(positions[n,[5]] - point[5])
+            delta2 = abs(positions[n,[4]] - point[4])
+            #print(names[n],delta1,delta2)
             delta = np.sum(delta0) + np.sum(delta1) +  np.sum(delta2)
             pose_discount+=delta
+        #input()
         #pose_discount /= -7
-        #print(pose_discount/100)
+        print(pose_discount)
         alive = float(self.alive_bonus(state[0]+self.initial_z, self.body_rpy[1]))   # state[0] is body height above ground, body_rpy[1] is pitch
         done = alive < 0 or ((distance_to_step_goals-2)>body_pose.xyz()[0] and not self.fixed_train)
         if not np.isfinite(state).all():
@@ -359,14 +385,14 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         # print(distance_to_step_goals)
         self.rewards = [
             0.25 * np.exp(-(pose_discount**2/10)),
-            0.30 * np.exp(-(pose_accel_discount**2/20)),
-            0.05 * np.exp(-(ankle_accel_discount**2/10)),
-            0.05 * np.exp(-(feet_parallel_to_ground**2/10)),
-            0.02 * np.exp(-(height_discount**2/10)),
-            0.02 * np.exp(-(pitch_discount**2/10)),
-            0.01 * np.exp(-(yaw_discount**2/20)),
-            0.10 * np.exp(-(roll_discount**2/10)),
-            0.20 * np.exp(-(distance_to_step_goals**2)),
+            # 0.30 * np.exp(-(pose_accel_discount**2/20)),
+            # 0.05 * np.exp(-(ankle_accel_discount**2/10)),
+            # 0.05 * np.exp(-(feet_parallel_to_ground**2/10)),
+            # 0.02 * np.exp(-(height_discount**2/10)),
+            # 0.02 * np.exp(-(pitch_discount**2/10)),
+            # 0.01 * np.exp(-(yaw_discount**2/20)),
+            # 0.10 * np.exp(-(roll_discount**2/10)),
+            # 0.20 * np.exp(-(distance_to_step_goals**2)),
             # 0.02 * np.exp(-(joints_at_limit_cost**2//10)),
             # # 0.05 * np.exp(-parts_collision_with_ground_cost**2/10),
             # 0.05 * np.exp(-feet_collision_cost**2/10),
@@ -462,3 +488,29 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
     def calc_pose_accel(self):
         a = (self.pose_history[2] - 2 * self.pose_history[1] + self.pose_history[0])/(0.033**2)
         return  a
+    def rotate_point(self, point, ypr):
+        point = np.transpose(point)
+        ca, sa = np.cos(ypr[0]), np.sin(ypr[0])
+        cb, sb = np.cos(ypr[1]),np.sin(ypr[1])
+        cg, sg = np.cos(ypr[2]),np.sin(ypr[2])
+        Ryaw=np.array([
+        [ ca, -sa,   0],
+        [ sa,  ca,   0],
+        [  0,   0,   1]
+        ])
+        Rpitch=np.array([
+        [ cb,   0,  sb],
+        [  0,   1,   0],
+        [-sb,   0,  cb]
+        ])
+        Rroll=np.array([
+        [  1,   0,   0],
+        [  0,  cg, -sg],
+        [  0,  sg,  cg]
+        ])
+        rotation_matrix = np.array([
+        [ca*cb, ca*sb*sg-sa*cg, ca*sb*cg+sa*sg],
+        [sa*cb, sa*sb*sg+ca*cg, sa*sb*cg-ca*sg],
+        [-sb, cb*sg, cb*cg]
+        ])
+        return np.dot(Rroll,point)

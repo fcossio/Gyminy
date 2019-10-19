@@ -10,5 +10,6 @@
   "RHip":"mixamorig_RightUpLeg",
   "LHip":"mixamorig_LeftUpLeg",
   "r_ankle":"mixamorig_RightToeBase",
-  "l_ankle":"mixamorig_LeftToeBase"
+  "l_ankle":"mixamorig_LeftToeBase",
+  "spine":"mixamorig_Spine2"
 }

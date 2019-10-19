@@ -32,7 +32,7 @@ zs=[]
 t=[]
 part_names = ["mixamorig_RightForeArm",
 "mixamorig_LeftForeArm",
-# "mixamorig_Spine2",
+"mixamorig_Spine2",
 "mixamorig_RightThigh",
 "mixamorig_LeftThigh",
 "mixamorig_RightTibia",
@@ -86,12 +86,12 @@ for filename in file_names:
             np.array(paths["mixamorig_LeftFoot"][i]))/2)
 
     important_paths = {}
-    spine = interpolate(paths["mixamorig_Spine2"], 15)
+    center = interpolate(paths["mixamorig_Hips"], 15)
     for part_name in part_names:
         a = interpolate(paths[part_name], 15)
         if mirrorx:
             a[:,0] = a[:,0] * -1
-        a = a - spine
+        a = a - center
 
         a[:, 1], a[:, 2] = a[:, 2], a[:, 1].copy()#swap y and z because axis are different in roboschool
         a[:, 0], a[:, 1] = a[:, 1], a[:, 0].copy()#swap x and y because axis are different in roboschool

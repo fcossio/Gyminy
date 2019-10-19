@@ -339,7 +339,6 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             pose_discount+=delta
         #input()
         #pose_discount /= -7
-        print(pose_discount)
         alive = float(self.alive_bonus(state[0]+self.initial_z, self.body_rpy[1]))   # state[0] is body height above ground, body_rpy[1] is pitch
         done = alive < 0 or ((distance_to_step_goals-2)>body_pose.xyz()[0] and not self.fixed_train)
         if not np.isfinite(state).all():

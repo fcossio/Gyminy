@@ -29,19 +29,19 @@ env = SubprocVecEnv([make_env('NaoLLC-v1', i) for i in range(n_cpu)])
 initial_timestep = 0
 
 
-activation_function = tf.nn.relu
+activation_function = tf.nn.leaky_relu
 net_arch = [512,256,64]
 # checkpoint_timesteps = 10000
 start_time = time()
 policy_kwargs = dict(
-    #act_fun=activation_function,
+    act_fun=activation_function,
     net_arch = net_arch)
 model = PPO2(MlpPolicy, env, verbose=2,
     tensorboard_log="./exponential_rewards",
     learning_rate = 0.00025,
     nminibatches = n_cpu,
-    n_steps = 128,
-    gamma = 0.96,
+    n_steps = 64,
+    gamma = 0.95,
     policy_kwargs=policy_kwargs)
 # model = PPO2.load("ppo2_NaoForwardWalk11jul.pkl", env = env, tensorboard_log="./ppo2_NaoForwardWalk")
 try:

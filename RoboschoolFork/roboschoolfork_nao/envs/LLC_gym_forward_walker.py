@@ -387,17 +387,17 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         # print(distance_to_step_goals)
         self.rewards = [
             0.25 * np.exp(-(pose_discount**2/10)),
-            # 0.25 * np.exp(-(pose_accel_discount**2/20)),
-            # 0.05 * np.exp(-(ankle_accel_discount**2/10)),
-            # 0.05 * np.exp(-(feet_parallel_to_ground**2/10)),
-            # 0.02 * np.exp(-(height_discount**2/10)),
-            # 0.02 * np.exp(-(pitch_discount**2/10)),
-            # 0.01 * np.exp(-(yaw_discount**2/20)),
-            # 0.08 * np.exp(-(roll_discount**2/10)),
-            # 0.20 * np.exp(-(distance_to_step_goals**2)),
-            # 0.02 * np.exp(-(joints_at_limit_cost**2//10)),
-            # # 0.05 * np.exp(-parts_collision_with_ground_cost**2/10),
-            # 0.05 * np.exp(-feet_collision_cost**2/10),
+            0.25 * np.exp(-(pose_accel_discount**2/20)),
+            0.05 * np.exp(-(ankle_accel_discount**2/10)),
+            0.05 * np.exp(-(feet_parallel_to_ground**2/10)),
+            0.02 * np.exp(-(height_discount**2/10)),
+            0.02 * np.exp(-(pitch_discount**2/10)),
+            0.01 * np.exp(-(yaw_discount**2/20)),
+            0.08 * np.exp(-(roll_discount**2/10)),
+            0.20 * np.exp(-(distance_to_step_goals**2)),
+            0.02 * np.exp(-(joints_at_limit_cost**2//10)),
+            # 0.05 * np.exp(-parts_collision_with_ground_cost**2/10),
+            0.05 * np.exp(-feet_collision_cost**2/10),
             #bonus to try to avoid exploding actions
             # 0.50 * 1/(1+np.exp((action_delta-15)/2))
             # 0.25 * action_delta,

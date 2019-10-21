@@ -41,7 +41,7 @@ model = PPO2(MlpPolicy, env, verbose=2,
     learning_rate = 0.00025,
     nminibatches = n_cpu,
     n_steps = 64,
-    gamma = 0.95,
+    gamma = 0.99,
     policy_kwargs=policy_kwargs)
 # model = PPO2.load("ppo2_NaoForwardWalk11jul.pkl", env = env, tensorboard_log="./ppo2_NaoForwardWalk")
 try:

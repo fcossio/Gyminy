@@ -294,13 +294,15 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         expected_x = (self.step_goal[0][0] + self.step_goal[1][0])/2
         for n in range(len(names)):
             x1,y1,z1 = center_xyz
-            r,p,yaw = center_rpy
+            r,p,yaw = body_pose.rpy()
+            # print(body_pose.quatertion())
+            # print("roll",round(r,3),"pitch",round(p,3),"yaw",round(yaw,3) )
             #print(positions[n,3],float(self.rand_animation[ names[n] ][ self.phase%15,[3] ])/370)
             point=np.array([
                 0,0,0,
                 self.rand_animation[ names[n] ][ self.phase%15,[3] ][0],
                 self.rand_animation[ names[n] ][ self.phase%15,[4] ][0],
-                self.rand_animation[ names[n] ][ self.phase%15,[5] ][0] +r
+                self.rand_animation[ names[n] ][ self.phase%15,[5] ][0] #+ r
             ])
             #point = np.array([self.rotate_point(point, [0,0,r])])
             #point = np.array(self.appendSpherical_np(point).flatten())

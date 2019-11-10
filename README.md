@@ -16,8 +16,10 @@ conda activate rbs
 pip install tensorflow
 pip install roboschool
 pip install stable_baselines
+sudo apt install libopenmpi-dev
 pip install -r requirements.txt
 pip install -e .
+apt-get install libpcre3-dev
 ```
 
 You can use the gym enviroment by

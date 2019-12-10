@@ -10,11 +10,11 @@ class RoboschoolUrdfEnv(gym.Env):
 
     metadata = {
         'render.modes': ['human', 'rgb_array'],
-        'video.frames_per_second': 60
+        'video.frames_per_second': 30
         }
 
-    VIDEO_W = 600  # for video showing the robot, not for camera ON the robot
-    VIDEO_H = 400
+    VIDEO_W = 600#528  # for video showing the robot, not for camera ON the robot
+    VIDEO_H = 600
 
     def __init__(self, model_urdf, robot_name, action_dim, obs_dim, fixed_base, self_collision):
         self.scene = None
@@ -41,9 +41,9 @@ class RoboschoolUrdfEnv(gym.Env):
             self.scene.episode_restart()
 
         pose = cpp_household.Pose()
-        #import time
-        #t1 = time.time()
-        #print("fixed base: ", self.fixed_base)
+        import time
+        t1 = time.time()
+        # print("fixed base: ", self.fixed_base)
         self.urdf = self.scene.cpp_world.load_urdf(
             os.path.join(os.path.dirname(__file__), "models_robot", self.model_urdf),
             pose,
@@ -88,6 +88,7 @@ class RoboschoolUrdfEnv(gym.Env):
         s = self.calc_state()    # optimization: calc_state() can calculate something in self.* for calc_potential() to use
         self.potential = self.calc_potential()
         self.camera = self.scene.cpp_world.new_camera_free_float(self.VIDEO_W, self.VIDEO_H, "video_camera")
+        self.camera2 = self.scene.cpp_world.new_camera_free_float(self.VIDEO_W, self.VIDEO_H, "video_camera")
         return s
 
     def render(self, mode='human'):
@@ -96,9 +97,12 @@ class RoboschoolUrdfEnv(gym.Env):
             return self.scene.cpp_world.test_window()
         elif mode=="rgb_array":
             self.camera_adjust()
-            rgb, _, _, _, _ = self.camera.render(True, True, False) # render_depth, render_labeling, print_timing)
+            rgb, _, _, _, _ = self.camera.render(False, False, False) # render_depth, render_labeling, print_timing)
+            rgb2, _, _, _, _ = self.camera2.render(False, False, False) # render_depth, render_labeling, print_timing)
             rendered_rgb = np.fromstring(rgb, dtype=np.uint8).reshape( (self.VIDEO_H,self.VIDEO_W,3) )
-            return rendered_rgb
+            rendered_rgb2 = np.fromstring(rgb2, dtype=np.uint8).reshape( (self.VIDEO_H,self.VIDEO_W,3) )
+
+            return np.concatenate((rendered_rgb,rendered_rgb2),axis =0)
         else:
             assert(0)
 

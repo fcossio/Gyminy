@@ -16,11 +16,13 @@ env = gym.make('NaoLLC-v1')
 # Enjoy trained agent
 obs = env.reset()
 episodes = 0
-for i in range(5000):
+for i in range(100000):
     action, _states = model.predict(obs)
     obs, rewards, dones, info = env.step(action)
     env.render()
-    print(rewards)
+    # print(action)
+    print(round(rewards,3))
+    #input()
     if dones:
         obs = env.reset()
         episodes += 1

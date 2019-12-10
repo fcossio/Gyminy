@@ -14,9 +14,10 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.power = power
         self.camera_x = 0
         self.walk_target_x = 1e3  # kilometer away
-        self.walk_target_y = 0
+        self.walk_target_y = 10
         self.start_pos_x, self.start_pos_y, self.start_pos_z = 0, 0, 0
         self.camera_x = 0
+        self.camera_x2 = 0
         self.camera_y = 4.3
         self.camera_z = 45.0
         self.camera_follow = 0
@@ -94,11 +95,11 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
                 # 'LShoulderRoll', 'RShoulderRoll',
                 'LElbowYaw', 'RElbowYaw',
                 'LElbowRoll','RElbowRoll',
-                # 'LHipYawPitch',
+                'LHipYawPitch',
                 # 'LHipRoll',
                 # 'LHipPitch',
                 # 'LKneePitch',
-                # 'RHipYawPitch',
+                'RHipYawPitch',
                 # 'RHipRoll',
                 # 'RHipPitch',
                 # 'RKneePitch',
@@ -106,6 +107,8 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             if j.name not in freezed:
                 j.set_servo_target(target,self.kp,0.10,self.power*j.power_coef)
                 # j.set_motor_torque( self.power*j.power_coef*float(np.clip(a[n], -1, +1)) )
+            else:
+                j.set_servo_target(self.real_position(self.initial_joint_position[j.name],j.limits()[0:2]),self.kp,0.10,self.power*j.power_coef)
         #print(delta)
         return delta
     # def get_action_position_distance(self, action):
@@ -143,7 +146,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         self.walk_target_theta = np.arctan2( self.walk_target_y - self.body_xyz[1], self.walk_target_x - self.body_xyz[0] )
         self.walk_target_dist  = np.linalg.norm( [self.walk_target_y - self.body_xyz[1], self.walk_target_x - self.body_xyz[0]] )
         self.angle_to_target = self.walk_target_theta - yaw
-
+        #print("yaw",round(yaw,2),"angle",round(self.angle_to_target,2))
         self.rot_minus_yaw = np.array(
             [[np.cos(-yaw), -np.sin(-yaw), 0],
              [np.sin(-yaw),  np.cos(-yaw), 0],
@@ -209,15 +212,15 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         rndy = self.np_random.uniform( low=-0.03, high=0.03 )
         if foot:
             x = self.step_goal[0][0]
-            # x = self.body_xyz[0]
-            # y = self.body_xyz[1]
-            y = 0
+            #x = self.body_xyz[0]
+            y = self.body_xyz[1]
+            # y = 0
             self.step_goal[foot] = [rndx + x, y + rndy -0.07]
         else:
             x = self.step_goal[1][0]
-            # x = self.body_xyz[0]
-            #y = self.body_xyz[1]
-            y = 0
+            #x = self.body_xyz[0]
+            y = self.body_xyz[1]
+            #y = 0
             self.step_goal[foot] = [rndx + x,y + rndy + 0.07]
 
     def step(self, a):
@@ -293,7 +296,7 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             pos = self.polar2cart(
                 float(self.rand_animation[ names[n] ][ self.phase%15,[3] ])/375,#positions[n,3],
                 self.rand_animation[ names[n] ][ self.phase%15,[4] ],
-                self.rand_animation[ names[n] ][ self.phase%15,[5] ] - r
+                self.rand_animation[ names[n] ][ self.phase%15,[5] ] - self.angle_to_target
                 )
             # if (self.phase%30 > 14):
             #     pos[0] *= -1
@@ -301,14 +304,14 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
             #pos[0] += expected_x + (self.phase%15)/30 * 0.4 - 0.1 #body_pose.xyz()[0]
             pos[1] += 0
             pos[1] += 0
-            pos[2] += 0.4
+            pos[2] += z1
             #pos[2] += body_pose.xyz()[2]
-            self.flag.append(self.scene.cpp_world.debug_sphere(pos[0], pos[1], pos[2], 0.02, 0xFF1010))
+            self.flag.append(self.scene.cpp_world.debug_sphere(pos[0], pos[1], pos[2], 0.01, 0x000077))
             if names[n] in ['mixamorig_RightToeBase','mixamorig_LeftToeBase']:
-                delta0 = abs(float(self.rand_animation[ names[n] ][ self.phase%15,[3] ])/375 - positions[n,3])*10
+                delta0 = abs(float(self.rand_animation[ names[n] ][ self.phase%15,[3] ])/390 - positions[n,3])*20
             else:
                 delta0 = 0;
-            delta1 = abs(positions[n,[5]] - self.rand_animation[names[n]][self.phase%15,[5]] - r)
+            delta1 = abs(positions[n,[5]] - self.rand_animation[names[n]][self.phase%15,[5]] - self.angle_to_target)
             delta2 = abs(positions[n,[4]] - self.rand_animation[names[n]][self.phase%15,[4]])*0.25
             delta = np.sum(delta0) + np.sum(delta1) +  np.sum(delta2)
             pose_discount+=delta
@@ -356,20 +359,20 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
         yaw_discount = -abs(self.body_rpy[2]) * 10
         joints_at_limit_cost = self.joints_at_limit
         #print(action_delta)
-        # print(distance_to_step_goals)
+        #print(distance_to_step_goals)
         self.rewards = [
-            0.25 * np.exp(-(pose_discount**2/10)),
-            0.30 * np.exp(-(pose_accel_discount**2/20)),
-            0.05 * np.exp(-(ankle_accel_discount**2/10)),
+            0.27 * np.exp(-(pose_discount**2/20)),
+            0.27 * np.exp(-(pose_accel_discount**2/20)),
+            0.07 * np.exp(-(ankle_accel_discount**2/10)),
             0.05 * np.exp(-(feet_parallel_to_ground**2/10)),
-            0.02 * np.exp(-(height_discount**2/10)),
-            0.02 * np.exp(-(pitch_discount**2/10)),
-            0.01 * np.exp(-(yaw_discount**2/20)),
-            0.10 * np.exp(-(roll_discount**2/10)),
-            0.20 * np.exp(-(distance_to_step_goals**2)),
-            # 0.02 * np.exp(-(joints_at_limit_cost**2//10)),
-            # # 0.05 * np.exp(-parts_collision_with_ground_cost**2/10),
-            # 0.05 * np.exp(-feet_collision_cost**2/10),
+            0.03 * np.exp(-(height_discount**2/10)),
+            0.03 * np.exp(-(self.body_rpy[1]**2)*8), #pitch
+            0.03 * np.exp(-(self.angle_to_target**4)),
+            0.03 * np.exp(-(self.body_rpy[0]**8)), #roll
+            0.20 * np.exp(-(distance_to_step_goals**2*32)),
+            0.015 * np.exp(-(joints_at_limit_cost**2//10)),
+            # 0.05 * np.exp(-parts_collision_with_ground_cost**2/10),
+            0.015 * np.exp(-feet_collision_cost**2/10),
             #bonus to try to avoid exploding actions
             # 0.50 * 1/(1+np.exp((action_delta-15)/2))
             # 0.25 * action_delta,
@@ -405,8 +408,11 @@ class LLC_RoboschoolForwardWalker(SharedMemoryClientEnv):
 
     def camera_simple_follow(self):
         x, y, z = self.body_xyz
-        self.camera_x = 0.98*self.camera_x + (1-0.98)*x
-        self.camera.move_and_look_at(self.camera_x, y-1.0, 0.1, x, y, 0.4)
+        self.camera_x = x
+        self.camera_x2 = x
+        #self.camera.move_and_look_at(self.camera_x, y-1.0, 0.1, x, y, 0.4)
+        self.camera.move_and_look_at(self.camera_x, y-0.7, 0.3, x, y, 0.250)
+        self.camera2.move_and_look_at(self.camera_x2+0.7, y-0.0, 0.3, x, y, 0.250)
 
     def camera_dramatic(self):
         pose = self.robot_body.pose()

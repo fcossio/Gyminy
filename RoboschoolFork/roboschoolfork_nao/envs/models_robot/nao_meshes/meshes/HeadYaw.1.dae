@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <asset>
+    <contributor>
+      <author>Blender User</author>
+      <authoring_tool>Blender 2.80.75 commit date:2019-07-29, commit time:14:47, hash:f6cb5f54494e</authoring_tool>
+    </contributor>
+    <created>2019-11-10T21:12:27</created>
+    <modified>2019-11-10T21:12:27</modified>
+    <unit name="meter" meter="1"/>
+    <up_axis>Z_UP</up_axis>
+  </asset>
+  <library_cameras>
+    <camera id="Camera-camera" name="Camera">
+      <optics>
+        <technique_common>
+          <perspective>
+            <xfov sid="xfov">39.59775</xfov>
+            <aspect_ratio>1.777778</aspect_ratio>
+            <znear sid="znear">0.1</znear>
+            <zfar sid="zfar">100</zfar>
+          </perspective>
+        </technique_common>
+      </optics>
+      <extra>
+        <technique profile="blender">
+          <shiftx sid="shiftx" type="float">0</shiftx>
+          <shifty sid="shifty" type="float">0</shifty>
+          <dof_distance sid="dof_distance" type="float">10</dof_distance>
+        </technique>
+      </extra>
+    </camera>
+  </library_cameras>
+  <library_lights>
+    <light id="Light-light" name="Light">
+      <technique_common>
+        <point>
+          <color sid="color">1000 1000 1000</color>
+          <constant_attenuation>1</constant_attenuation>
+          <linear_attenuation>0</linear_attenuation>
+          <quadratic_attenuation>0.00111109</quadratic_attenuation>
+        </point>
+      </technique_common>
+      <extra>
+        <technique profile="blender">
+          <type sid="type" type="int">0</type>
+          <flag sid="flag" type="int">0</flag>
+          <mode sid="mode" type="int">1</mode>
+          <gamma sid="blender_gamma" type="float">1</gamma>
+          <red sid="red" type="float">1</red>
+          <green sid="green" type="float">1</green>
+          <blue sid="blue" type="float">1</blue>
+          <shadow_r sid="blender_shadow_r" type="float">0</shadow_r>
+          <shadow_g sid="blender_shadow_g" type="float">0</shadow_g>
+          <shadow_b sid="blender_shadow_b" type="float">0</shadow_b>
+          <energy sid="blender_energy" type="float">1000</energy>
+          <dist sid="blender_dist" type="float">29.99998</dist>
+          <spotsize sid="spotsize" type="float">75</spotsize>
+          <spotblend sid="spotblend" type="float">0.15</spotblend>
+          <att1 sid="att1" type="float">0</att1>
+          <att2 sid="att2" type="float">1</att2>
+          <falloff_type sid="falloff_type" type="int">2</falloff_type>
+          <clipsta sid="clipsta" type="float">0.04999995</clipsta>
+          <clipend sid="clipend" type="float">30.002</clipend>
+          <bias sid="bias" type="float">1</bias>
+          <soft sid="soft" type="float">3</soft>
+          <bufsize sid="bufsize" type="int">2880</bufsize>
+          <samp sid="samp" type="int">3</samp>
+          <buffers sid="buffers" type="int">1</buffers>
+          <area_shape sid="area_shape" type="int">1</area_shape>
+          <area_size sid="area_size" type="float">0.1</area_size>
+          <area_sizey sid="area_sizey" type="float">0.1</area_sizey>
+          <area_sizez sid="area_sizez" type="float">1</area_sizez>
+        </technique>
+      </extra>
+    </light>
+  </library_lights>
+  <library_effects>
+    <effect id="HeadYawuv-effect">
+      <profile_COMMON>
+        <newparam sid="textureNAO_png-surface">
+          <surface type="2D">
+            <init_from>textureNAO_png</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="textureNAO_png-sampler">
+          <sampler2D>
+            <source>textureNAO_png-surface</source>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <texture texture="textureNAO_png-sampler" texcoord="Neck-mesh-map-0"/>
+            </diffuse>
+            <index_of_refraction>
+              <float sid="ior">1</float>
+            </index_of_refraction>
+          </lambert>
+        </technique>
+      </profile_COMMON>
+    </effect>
+    <effect id="NaoMat_Leye_005-effect">
+      <profile_COMMON>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <color sid="diffuse">0.4 0.4 0.4 1</color>
+            </diffuse>
+            <index_of_refraction>
+              <float sid="ior">1</float>
+            </index_of_refraction>
+          </lambert>
+        </technique>
+      </profile_COMMON>
+    </effect>
+    <effect id="NaoMat_Hear_005-effect">
+      <profile_COMMON>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <color sid="diffuse">0.4 0.4 0.4 1</color>
+            </diffuse>
+            <index_of_refraction>
+              <float sid="ior">1</float>
+            </index_of_refraction>
+          </lambert>
+        </technique>
+      </profile_COMMON>
+    </effect>
+    <effect id="NaoMat_SecondarySkin2_016-effect">
+      <profile_COMMON>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <color sid="diffuse">0.4 0.4 0.4 1</color>
+            </diffuse>
+            <index_of_refraction>
+              <float sid="ior">1</float>
+            </index_of_refraction>
+          </lambert>
+        </technique>
+      </profile_COMMON>
+    </effect>
+    <effect id="NaoMat_Structure_024-effect">
+      <profile_COMMON>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <color sid="diffuse">0.4 0.4 0.4 1</color>
+            </diffuse>
+            <index_of_refraction>
+              <float sid="ior">1</float>
+            </index_of_refraction>
+          </lambert>
+        </technique>
+      </profile_COMMON>
+    </effect>
+    <effect id="NaoMat_MainSkin_037-effect">
+      <profile_COMMON>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <color sid="diffuse">0.4 0.4 0.4 1</color>
+            </diffuse>
+            <index_of_refraction>
+              <float sid="ior">1</float>
+            </index_of_refraction>
+          </lambert>
+        </technique>
+      </profile_COMMON>
+    </effect>
+    <effect id="NaoMat_Reye_005-effect">
+      <profile_COMMON>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <color sid="diffuse">0.4 0.4 0.4 1</color>
+            </diffuse>
+            <index_of_refraction>
+              <float sid="ior">1</float>
+            </index_of_refraction>
+          </lambert>
+        </technique>
+      </profile_COMMON>
+    </effect>
+    <effect id="NaoMat_Pupil_005-effect">
+      <profile_COMMON>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <color sid="diffuse">0.4 0.4 0.4 1</color>
+            </diffuse>
+            <index_of_refraction>
+              <float sid="ior">1</float>
+            </index_of_refraction>
+          </lambert>
+        </technique>
+      </profile_COMMON>
+    </effect>
+  </library_effects>
+  <library_images>
+    <image id="textureNAO_png" name="textureNAO_png">
+      <init_from>textureNAO.png</init_from>
+    </image>
+  </library_images>
+  <library_materials>
+    <material id="HeadYawuv-material" name="HeadYawuv">
+      <instance_effect url="#HeadYawuv-effect"/>
+    </material>
+    <material id="NaoMat_Leye_005-material" name="NaoMat_Leye.005">
+      <instance_effect url="#NaoMat_Leye_005-effect"/>
+    </material>
+    <material id="NaoMat_Hear_005-material" name="NaoMat_Hear.005">
+      <instance_effect url="#NaoMat_Hear_005-effect"/>
+    </material>
+    <material id="NaoMat_SecondarySkin2_016-material" name="NaoMat_SecondarySkin2.016">
+      <instance_effect url="#NaoMat_SecondarySkin2_016-effect"/>
+    </material>
+    <material id="NaoMat_Structure_024-material" name="NaoMat_Structure.024">
+      <instance_effect url="#NaoMat_Structure_024-effect"/>
+    </material>
+    <material id="NaoMat_MainSkin_037-material" name="NaoMat_MainSkin.037">
+      <instance_effect url="#NaoMat_MainSkin_037-effect"/>
+    </material>
+    <material id="NaoMat_Reye_005-material" name="NaoMat_Reye.005">
+      <instance_effect url="#NaoMat_Reye_005-effect"/>
+    </material>
+    <material id="NaoMat_Pupil_005-material" name="NaoMat_Pupil.005">
+      <instance_effect url="#NaoMat_Pupil_005-effect"/>
+    </material>
+  </library_materials>
+  <library_geometries>
+    <geometry id="Neck-mesh" name="Neck">
+      <mesh>
+        <source id="Neck-mesh-positions">
+          <float_array id="Neck-mesh-positions-array" count="24">12.60001 12.59997 -12.47716 12.60001 -12.60002 -12.47714 12.60001 -12.60002 12.72286 12.60001 12.59999 12.72285 -12.6 -12.6 12.72286 -12.59999 -12.60001 -12.47714 -12.59999 12.59999 -12.47715 -12.59999 12.6 12.72285</float_array>
+          <technique_common>
+            <accessor source="#Neck-mesh-positions-array" count="8" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="Neck-mesh-normals">
+          <float_array id="Neck-mesh-normals-array" count="12">-0.7071068 -0.7071068 0 0.7071068 -0.7071068 0 -0.7071068 0.7071068 0 0.7071068 0.7071068 0</float_array>
+          <technique_common>
+            <accessor source="#Neck-mesh-normals-array" count="4" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="Neck-mesh-map-0">
+          <float_array id="Neck-mesh-map-0-array" count="48">0.1111484 0.1368111 0.1117857 0.1389018 0.07133668 0.1749687 0.1117486 0.1345446 0.1438508 0.1068909 0.1447283 0.171428 0.1117857 0.1389018 0.1138673 0.1369085 0.1447283 0.171428 0.1117486 0.1345446 0.1111484 0.1368111 0.07133853 0.0850315 0.07133853 0.0850315 0.1111484 0.1368111 0.07133668 0.1749687 0.1138673 0.1369085 0.1117486 0.1345446 0.1447283 0.171428 0.07133668 0.1749687 0.1117857 0.1389018 0.1447283 0.171428 0.1438508 0.1068909 0.1117486 0.1345446 0.07133853 0.0850315</float_array>
+          <technique_common>
+            <accessor source="#Neck-mesh-map-0-array" count="24" stride="2">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="Neck-mesh-vertices">
+          <input semantic="POSITION" source="#Neck-mesh-positions"/>
+        </vertices>
+        <triangles material="HeadYawuv-material" count="8">
+          <input semantic="VERTEX" source="#Neck-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#Neck-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#Neck-mesh-map-0" offset="2" set="0"/>
+          <p>5 0 0 1 1 1 2 1 2 6 2 3 7 2 4 3 3 5 1 1 6 0 3 7 3 3 8 6 2 9 5 0 10 4 0 11 4 0 12 5 0 13 2 1 14 0 3 15 6 2 16 3 3 17 2 1 18 1 1 19 3 3 20 7 2 21 6 2 22 4 0 23</p>
+        </triangles>
+      </mesh>
+    </geometry>
+  </library_geometries>
+  <library_visual_scenes>
+    <visual_scene id="Scene" name="Scene">
+      <node id="HeadYaw" name="HeadYaw" type="NODE">
+        <matrix sid="transform">0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 0 1</matrix>
+        <instance_geometry url="#Neck-mesh" name="HeadYaw">
+          <bind_material>
+            <technique_common>
+              <instance_material symbol="HeadYawuv-material" target="#HeadYawuv-material">
+                <bind_vertex_input semantic="Neck-mesh-map-0" input_semantic="TEXCOORD" input_set="0"/>
+              </instance_material>
+              <instance_material symbol="NaoMat_Leye_005-material" target="#NaoMat_Leye_005-material">
+                <bind_vertex_input semantic="Neck-mesh-map-0" input_semantic="TEXCOORD" input_set="0"/>
+              </instance_material>
+              <instance_material symbol="NaoMat_Hear_005-material" target="#NaoMat_Hear_005-material">
+                <bind_vertex_input semantic="Neck-mesh-map-0" input_semantic="TEXCOORD" input_set="0"/>
+              </instance_material>
+              <instance_material symbol="NaoMat_SecondarySkin2_016-material" target="#NaoMat_SecondarySkin2_016-material">
+                <bind_vertex_input semantic="Neck-mesh-map-0" input_semantic="TEXCOORD" input_set="0"/>
+              </instance_material>
+              <instance_material symbol="NaoMat_Structure_024-material" target="#NaoMat_Structure_024-material">
+                <bind_vertex_input semantic="Neck-mesh-map-0" input_semantic="TEXCOORD" input_set="0"/>
+              </instance_material>
+              <instance_material symbol="NaoMat_MainSkin_037-material" target="#NaoMat_MainSkin_037-material">
+                <bind_vertex_input semantic="Neck-mesh-map-0" input_semantic="TEXCOORD" input_set="0"/>
+              </instance_material>
+              <instance_material symbol="NaoMat_Reye_005-material" target="#NaoMat_Reye_005-material">
+                <bind_vertex_input semantic="Neck-mesh-map-0" input_semantic="TEXCOORD" input_set="0"/>
+              </instance_material>
+              <instance_material symbol="NaoMat_Pupil_005-material" target="#NaoMat_Pupil_005-material">
+                <bind_vertex_input semantic="Neck-mesh-map-0" input_semantic="TEXCOORD" input_set="0"/>
+              </instance_material>
+            </technique_common>
+          </bind_material>
+        </instance_geometry>
+      </node>
+      <node id="Camera" name="Camera" type="NODE">
+        <matrix sid="transform">0.6859207 -0.3240135 0.6515582 7.358891 0.7276763 0.3054208 -0.6141704 -6.925791 0 0.8953956 0.4452714 4.958309 0 0 0 1</matrix>
+        <instance_camera url="#Camera-camera"/>
+      </node>
+      <node id="Light" name="Light" type="NODE">
+        <matrix sid="transform">-0.2908646 -0.7711008 0.5663932 4.076245 0.9551712 -0.1998834 0.2183912 1.005454 -0.05518906 0.6045247 0.7946723 5.903862 0 0 0 1</matrix>
+        <instance_light url="#Light-light"/>
+      </node>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#Scene"/>
+  </scene>
+</COLLADA>

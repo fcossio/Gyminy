@@ -1,7 +1,8 @@
+print("test Nao LLC")
 import gym, roboschool, roboschoolfork_nao
 import numpy as np
 env = gym.make('NaoLLC-v1')
-env.reset()
+
 INITIAL_MOTOR_POS = {'HeadYaw': 0.0, #[0]
 'HeadPitch': 0.0, #[1]
 'LHipYawPitch': -0.0, #[2]
@@ -45,6 +46,7 @@ INITIAL_MOTOR_POS = {'HeadYaw': 0.0, #[0]
 # 'RPhalanx7': 0.0,#[40]
 # 'RPhalanx8': 0.0}#[41]
 }
+env.reset()
 # print(np.array(list(INITIAL_MOTOR_POS.values())))
 obs, rewards, dones, info = env.step(np.array(list(INITIAL_MOTOR_POS.values())))
 for i in range(5000):

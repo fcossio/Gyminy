@@ -16,11 +16,20 @@ env = gym.make('NaoLLC-v1')
 # Enjoy trained agent
 obs = env.reset()
 episodes = 0
-with imageio.get_writer(model_path.split('.')[0]+'.gif', mode='I', fps=30) as writer:
-    for i in tqdm(range(300)):
-        action, _states = model.predict(obs)
-        obs, rewards, dones, info = env.step(action)
-        if dones:
-            obs = env.reset()
-            episodes += 1
-        writer.append_data(env.render(mode='rgb_array'))
+length = 0
+epseed = 0
+while length<90:
+    length = 0
+    with imageio.get_writer(model_path.split('.')[0]+'.gif', mode='I', fps=30) as writer:
+        env.seed(epseed)
+        for i in tqdm(range(150)):
+            action, _states = model.predict(obs)
+            obs, rewards, dones, info = env.step(action)
+            length += 1
+            writer.append_data(env.render(mode='rgb_array'))
+            if dones:
+                obs = env.reset()
+                episodes += 1
+                epseed+=1
+                print(epseed)
+                break

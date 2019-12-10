@@ -22,7 +22,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/HeadYaw.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/HeadYaw.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -48,7 +48,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/HeadPitch.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/HeadPitch.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -80,7 +80,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/LHipYawPitch.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/LHipYawPitch.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -106,7 +106,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/LHipRoll.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/LHipRoll.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -132,7 +132,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/LHipPitch.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/LHipPitch.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -158,7 +158,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/LKneePitch.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/LKneePitch.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -184,7 +184,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/LAnklePitch.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/LAnklePitch.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -210,7 +210,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/LAnkleRoll.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/LAnkleRoll.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -250,7 +250,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/RHipYawPitch.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/RHipYawPitch.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -276,7 +276,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/RHipRoll.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/RHipRoll.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -302,7 +302,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/RHipPitch.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/RHipPitch.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -328,7 +328,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/RKneePitch.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/RKneePitch.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -354,7 +354,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/RAnklePitch.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/RAnklePitch.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -380,7 +380,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/RAnkleRoll.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/RAnkleRoll.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -426,7 +426,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/Torso.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/Torso.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -452,7 +452,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/LShoulderPitch.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/LShoulderPitch.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -478,7 +478,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/LShoulderRoll.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/LShoulderRoll.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -518,7 +518,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/LElbowRoll.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/LElbowRoll.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -544,7 +544,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/LWristYaw.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/LWristYaw.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -583,7 +583,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/RShoulderPitch.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/RShoulderPitch.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -609,7 +609,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/RShoulderRoll.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/RShoulderRoll.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -649,7 +649,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/RElbowRoll.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/RElbowRoll.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -675,7 +675,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/RWristYaw.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/RWristYaw.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -1016,7 +1016,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/RFinger13.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/RFinger13.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -1041,7 +1041,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/RFinger12.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/RFinger12.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -1066,7 +1066,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/LFinger21.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/LFinger21.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -1091,7 +1091,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/LFinger13.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/LFinger13.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -1116,7 +1116,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/LFinger11.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/LFinger11.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -1141,7 +1141,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/RFinger22.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/RFinger22.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -1166,7 +1166,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/LFinger22.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/LFinger22.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -1191,7 +1191,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/RFinger21.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/RFinger21.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -1216,7 +1216,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/LFinger12.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/LFinger12.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -1241,7 +1241,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/RFinger23.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/RFinger23.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -1266,7 +1266,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/RFinger11.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/RFinger11.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -1291,7 +1291,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/LFinger23.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/LFinger23.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -1316,7 +1316,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/LThumb1.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/LThumb1.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -1341,7 +1341,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/RThumb1.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/RThumb1.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -1366,7 +1366,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/RThumb2.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/RThumb2.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>
@@ -1391,7 +1391,7 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://nao_meshes/meshes/LThumb2.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://nao_meshes/meshes/LThumb2.1.dae" scale="0.1 0.1 0.1"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </visual>

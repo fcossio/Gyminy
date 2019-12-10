@@ -2,9 +2,15 @@ for file in os.listdir(path):
   if file.endswith(".dae"):
     name, _ = file.split(".")
     bpy.ops.wm.collada_import(filepath=path+"/"+file)
-    bpy.ops.export_scene.obj(filepath=path+"/"+name+".obj", use_selection=True, global_scale=0.1, axis_forward='Y', axis_up='Z')
+    bpy.context.active_object.scale = ( 0.001, 0.001, 0.001 )
+    #bpy.ops.export_scene.obj(filepath=path+"/"+name+".obj", use_selection=True, global_scale=0.1, axis_forward='Y', axis_up='Z')
+    bpy.ops.wm.collada_export(filepath=path+"/"+name+".1.dae", check_existing=False, filter_blender=False, filter_image=False, filter_movie=False, filter_python=False, filter_font=False, filter_sound=False, filter_text=False, filter_btx=False, filter_collada=True, filter_folder=True, filemode=8)
     bpy.ops.object.delete()
 
+
+bpy.ops.wm.collada_export(filepath=path+"/"+name+"test.dae", check_existing=False, filter_blender=False, filter_image=False, filter_movie=False, filter_python=False, filter_font=False, filter_sound=False, filter_text=False, filter_btx=False, filter_collada=True, filter_folder=True, filemode=8)
+
+bpy.ops.wm.collada_export(filepath="", check_existing=False, filter_blender=False, filter_backup=False, filter_image=False, filter_movie=False, filter_python=False, filter_font=False, filter_sound=False, filter_text=False, filter_btx=False, filter_collada=True, filter_alembic=False, filter_folder=True, filter_blenlib=False, filemode=8, display_type='DEFAULT', sort_method='FILE_SORT_ALPHA', prop_bc_export_ui_section='main', apply_modifiers=False, export_mesh_type=0, export_mesh_type_selection='view', export_global_forward_selection='Y', export_global_up_selection='Z', apply_global_orientation=False, selected=False, include_children=False, include_armatures=False, include_shapekeys=False, deform_bones_only=False, include_animations=True, include_all_actions=True, export_animation_type_selection='sample', sampling_rate=1, keep_smooth_curves=False, keep_keyframes=False, keep_flat_curves=False, active_uv_only=False, use_texture_copies=True, triangulate=True, use_object_instantiation=True, use_blender_profile=True, sort_by_name=False, export_object_transformation_type=0, export_object_transformation_type_selection='matrix', export_animation_transformation_type=0, export_animation_transformation_type_selection='matrix', open_sim=False, limit_precision=False, keep_bind_info=False)
 
 #bpy.context.active_object.scale = ( 0.001, 0.001, 0.001 )
 

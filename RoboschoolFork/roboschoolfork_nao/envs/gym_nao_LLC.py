@@ -9,11 +9,12 @@ class NaoLLC(LLC_RoboschoolForwardWalker, RoboschoolUrdfEnv):
     3-D humanoid robot similar to Nao robot.
     The task is to make the robot follow two steps
     '''
-    random_yaw = True
+    random_yaw = False
     foot_list = ["r_ankle", "l_ankle"]
 
     def __init__(self):
         LLC_RoboschoolForwardWalker.__init__(self, power=1)
+        self.random_yaw = False
         RoboschoolUrdfEnv.__init__(self,
             "nao_description/urdf/naoV50_generated_urdf/nao.urdf",
             "torso",

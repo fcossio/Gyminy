@@ -1,0 +1,477 @@
+Traceback (most recent call last):
+  File "train.py", line 28, in <module>
+    env = SubprocVecEnv([make_env('NaoLLC-v1', i) for i in range(n_cpu)])
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/site-packages/stable_baselines/common/vec_env/subproc_vec_env.py", line 95, in __init__
+    observation_space, action_space = self.remotes[0].recv()
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/connection.py", line 250, in recv
+    buf = self._recv_bytes()
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/connection.py", line 407, in _recv_bytes
+    buf = self._recv(4)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/connection.py", line 379, in _recv
+    chunk = read(handle, remaining)
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/forkserver.py", line 261, in main
+    old_handlers)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/forkserver.py", line 297, in _serve_one
+    code = spawn._main(child_r)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 114, in _main
+    prepare(preparation_data)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 225, in prepare
+    _fixup_main_from_path(data['init_main_from_path'])
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 277, in _fixup_main_from_path
+    run_name="__mp_main__")
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/runpy.py", line 263, in run_path
+    pkg_name=pkg_name, script_name=fname)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/runpy.py", line 96, in _run_module_code
+    mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+  File "/home/gyminy/Gyminy/RoboschoolFork/tests/train.py", line 28, in <module>
+    env = SubprocVecEnv([make_env('NaoLLC-v1', i) for i in range(n_cpu)])
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/site-packages/stable_baselines/common/vec_env/subproc_vec_env.py", line 90, in __init__
+    process.start()
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/process.py", line 112, in start
+    self._popen = self._Popen(self)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/context.py", line 291, in _Popen
+    return Popen(process_obj)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/popen_forkserver.py", line 35, in __init__
+    super().__init__(process_obj)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/popen_fork.py", line 20, in __init__
+    self._launch(process_obj)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/popen_forkserver.py", line 42, in _launch
+    prep_data = spawn.get_preparation_data(process_obj._name)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 143, in get_preparation_data
+    _check_not_importing_main()
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 136, in _check_not_importing_main
+    is not going to be frozen to produce an executable.''')
+RuntimeError: 
+        An attempt has been made to start a new process before the
+        current process has finished its bootstrapping phase.
+
+        This probably means that you are not using fork to start your
+        child processes and you have forgotten to use the proper idiom
+        in the main module:
+
+            if __name__ == '__main__':
+                freeze_support()
+                ...
+
+        The "freeze_support()" line can be omitted if the program
+        is not going to be frozen to produce an executable.
+Traceback (most recent call last):
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/forkserver.py", line 261, in main
+    old_handlers)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/forkserver.py", line 297, in _serve_one
+    code = spawn._main(child_r)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 114, in _main
+    prepare(preparation_data)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 225, in prepare
+    _fixup_main_from_path(data['init_main_from_path'])
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 277, in _fixup_main_from_path
+    run_name="__mp_main__")
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/runpy.py", line 263, in run_path
+    pkg_name=pkg_name, script_name=fname)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/runpy.py", line 96, in _run_module_code
+    mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+  File "/home/gyminy/Gyminy/RoboschoolFork/tests/train.py", line 28, in <module>
+    env = SubprocVecEnv([make_env('NaoLLC-v1', i) for i in range(n_cpu)])
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/site-packages/stable_baselines/common/vec_env/subproc_vec_env.py", line 90, in __init__
+    process.start()
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/process.py", line 112, in start
+    self._popen = self._Popen(self)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/context.py", line 291, in _Popen
+    return Popen(process_obj)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/popen_forkserver.py", line 35, in __init__
+    super().__init__(process_obj)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/popen_fork.py", line 20, in __init__
+    self._launch(process_obj)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/popen_forkserver.py", line 42, in _launch
+    prep_data = spawn.get_preparation_data(process_obj._name)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 143, in get_preparation_data
+    _check_not_importing_main()
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 136, in _check_not_importing_main
+    is not going to be frozen to produce an executable.''')
+RuntimeError: 
+        An attempt has been made to start a new process before the
+        current process has finished its bootstrapping phase.
+
+        This probably means that you are not using fork to start your
+        child processes and you have forgotten to use the proper idiom
+        in the main module:
+
+            if __name__ == '__main__':
+                freeze_support()
+                ...
+
+        The "freeze_support()" line can be omitted if the program
+        is not going to be frozen to produce an executable.
+Traceback (most recent call last):
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/forkserver.py", line 261, in main
+    old_handlers)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/forkserver.py", line 297, in _serve_one
+    code = spawn._main(child_r)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 114, in _main
+    prepare(preparation_data)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 225, in prepare
+    _fixup_main_from_path(data['init_main_from_path'])
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 277, in _fixup_main_from_path
+    run_name="__mp_main__")
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/runpy.py", line 263, in run_path
+    pkg_name=pkg_name, script_name=fname)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/runpy.py", line 96, in _run_module_code
+    mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+  File "/home/gyminy/Gyminy/RoboschoolFork/tests/train.py", line 28, in <module>
+    env = SubprocVecEnv([make_env('NaoLLC-v1', i) for i in range(n_cpu)])
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/site-packages/stable_baselines/common/vec_env/subproc_vec_env.py", line 90, in __init__
+    process.start()
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/process.py", line 112, in start
+    self._popen = self._Popen(self)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/context.py", line 291, in _Popen
+    return Popen(process_obj)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/popen_forkserver.py", line 35, in __init__
+    super().__init__(process_obj)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/popen_fork.py", line 20, in __init__
+    self._launch(process_obj)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/popen_forkserver.py", line 42, in _launch
+    prep_data = spawn.get_preparation_data(process_obj._name)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 143, in get_preparation_data
+    _check_not_importing_main()
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 136, in _check_not_importing_main
+    is not going to be frozen to produce an executable.''')
+RuntimeError: 
+        An attempt has been made to start a new process before the
+        current process has finished its bootstrapping phase.
+
+        This probably means that you are not using fork to start your
+        child processes and you have forgotten to use the proper idiom
+        in the main module:
+
+            if __name__ == '__main__':
+                freeze_support()
+                ...
+
+        The "freeze_support()" line can be omitted if the program
+        is not going to be frozen to produce an executable.
+Traceback (most recent call last):
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/forkserver.py", line 261, in main
+    old_handlers)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/forkserver.py", line 297, in _serve_one
+    code = spawn._main(child_r)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 114, in _main
+    prepare(preparation_data)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 225, in prepare
+    _fixup_main_from_path(data['init_main_from_path'])
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 277, in _fixup_main_from_path
+    run_name="__mp_main__")
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/runpy.py", line 263, in run_path
+    pkg_name=pkg_name, script_name=fname)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/runpy.py", line 96, in _run_module_code
+    mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+  File "/home/gyminy/Gyminy/RoboschoolFork/tests/train.py", line 28, in <module>
+    env = SubprocVecEnv([make_env('NaoLLC-v1', i) for i in range(n_cpu)])
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/site-packages/stable_baselines/common/vec_env/subproc_vec_env.py", line 90, in __init__
+    process.start()
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/process.py", line 112, in start
+    self._popen = self._Popen(self)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/context.py", line 291, in _Popen
+    return Popen(process_obj)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/popen_forkserver.py", line 35, in __init__
+    super().__init__(process_obj)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/popen_fork.py", line 20, in __init__
+    self._launch(process_obj)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/popen_forkserver.py", line 42, in _launch
+    prep_data = spawn.get_preparation_data(process_obj._name)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 143, in get_preparation_data
+    _check_not_importing_main()
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 136, in _check_not_importing_main
+    is not going to be frozen to produce an executable.''')
+RuntimeError: 
+        An attempt has been made to start a new process before the
+        current process has finished its bootstrapping phase.
+
+        This probably means that you are not using fork to start your
+        child processes and you have forgotten to use the proper idiom
+        in the main module:
+
+            if __name__ == '__main__':
+                freeze_support()
+                ...
+
+        The "freeze_support()" line can be omitted if the program
+        is not going to be frozen to produce an executable.
+Traceback (most recent call last):
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/forkserver.py", line 261, in main
+    old_handlers)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/forkserver.py", line 297, in _serve_one
+    code = spawn._main(child_r)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 114, in _main
+    prepare(preparation_data)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 225, in prepare
+    _fixup_main_from_path(data['init_main_from_path'])
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 277, in _fixup_main_from_path
+    run_name="__mp_main__")
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/runpy.py", line 263, in run_path
+    pkg_name=pkg_name, script_name=fname)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/runpy.py", line 96, in _run_module_code
+    mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+  File "/home/gyminy/Gyminy/RoboschoolFork/tests/train.py", line 28, in <module>
+    env = SubprocVecEnv([make_env('NaoLLC-v1', i) for i in range(n_cpu)])
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/site-packages/stable_baselines/common/vec_env/subproc_vec_env.py", line 90, in __init__
+    process.start()
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/process.py", line 112, in start
+    self._popen = self._Popen(self)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/context.py", line 291, in _Popen
+    return Popen(process_obj)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/popen_forkserver.py", line 35, in __init__
+    super().__init__(process_obj)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/popen_fork.py", line 20, in __init__
+    self._launch(process_obj)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/popen_forkserver.py", line 42, in _launch
+    prep_data = spawn.get_preparation_data(process_obj._name)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 143, in get_preparation_data
+    _check_not_importing_main()
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 136, in _check_not_importing_main
+    is not going to be frozen to produce an executable.''')
+RuntimeError: 
+        An attempt has been made to start a new process before the
+        current process has finished its bootstrapping phase.
+
+        This probably means that you are not using fork to start your
+        child processes and you have forgotten to use the proper idiom
+        in the main module:
+
+            if __name__ == '__main__':
+                freeze_support()
+                ...
+
+        The "freeze_support()" line can be omitted if the program
+        is not going to be frozen to produce an executable.
+Traceback (most recent call last):
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/forkserver.py", line 261, in main
+    old_handlers)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/forkserver.py", line 297, in _serve_one
+    code = spawn._main(child_r)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 114, in _main
+    prepare(preparation_data)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 225, in prepare
+    _fixup_main_from_path(data['init_main_from_path'])
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 277, in _fixup_main_from_path
+    run_name="__mp_main__")
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/runpy.py", line 263, in run_path
+    pkg_name=pkg_name, script_name=fname)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/runpy.py", line 96, in _run_module_code
+    mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+  File "/home/gyminy/Gyminy/RoboschoolFork/tests/train.py", line 28, in <module>
+    env = SubprocVecEnv([make_env('NaoLLC-v1', i) for i in range(n_cpu)])
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/site-packages/stable_baselines/common/vec_env/subproc_vec_env.py", line 90, in __init__
+    process.start()
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/process.py", line 112, in start
+    self._popen = self._Popen(self)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/context.py", line 291, in _Popen
+    return Popen(process_obj)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/popen_forkserver.py", line 35, in __init__
+    super().__init__(process_obj)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/popen_fork.py", line 20, in __init__
+    self._launch(process_obj)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/popen_forkserver.py", line 42, in _launch
+    prep_data = spawn.get_preparation_data(process_obj._name)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 143, in get_preparation_data
+    _check_not_importing_main()
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 136, in _check_not_importing_main
+    is not going to be frozen to produce an executable.''')
+RuntimeError: 
+        An attempt has been made to start a new process before the
+        current process has finished its bootstrapping phase.
+
+        This probably means that you are not using fork to start your
+        child processes and you have forgotten to use the proper idiom
+        in the main module:
+
+            if __name__ == '__main__':
+                freeze_support()
+                ...
+
+        The "freeze_support()" line can be omitted if the program
+        is not going to be frozen to produce an executable.
+Traceback (most recent call last):
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/forkserver.py", line 261, in main
+    old_handlers)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/forkserver.py", line 297, in _serve_one
+    code = spawn._main(child_r)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 114, in _main
+    prepare(preparation_data)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 225, in prepare
+    _fixup_main_from_path(data['init_main_from_path'])
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 277, in _fixup_main_from_path
+    run_name="__mp_main__")
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/runpy.py", line 263, in run_path
+    pkg_name=pkg_name, script_name=fname)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/runpy.py", line 96, in _run_module_code
+    mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+  File "/home/gyminy/Gyminy/RoboschoolFork/tests/train.py", line 28, in <module>
+    env = SubprocVecEnv([make_env('NaoLLC-v1', i) for i in range(n_cpu)])
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/site-packages/stable_baselines/common/vec_env/subproc_vec_env.py", line 90, in __init__
+    process.start()
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/process.py", line 112, in start
+    self._popen = self._Popen(self)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/context.py", line 291, in _Popen
+    return Popen(process_obj)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/popen_forkserver.py", line 35, in __init__
+    super().__init__(process_obj)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/popen_fork.py", line 20, in __init__
+    self._launch(process_obj)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/popen_forkserver.py", line 42, in _launch
+    prep_data = spawn.get_preparation_data(process_obj._name)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 143, in get_preparation_data
+    _check_not_importing_main()
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 136, in _check_not_importing_main
+    is not going to be frozen to produce an executable.''')
+RuntimeError: 
+        An attempt has been made to start a new process before the
+        current process has finished its bootstrapping phase.
+
+        This probably means that you are not using fork to start your
+        child processes and you have forgotten to use the proper idiom
+        in the main module:
+
+            if __name__ == '__main__':
+                freeze_support()
+                ...
+
+        The "freeze_support()" line can be omitted if the program
+        is not going to be frozen to produce an executable.
+Traceback (most recent call last):
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/forkserver.py", line 261, in main
+    old_handlers)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/forkserver.py", line 297, in _serve_one
+    code = spawn._main(child_r)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 114, in _main
+    prepare(preparation_data)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 225, in prepare
+    _fixup_main_from_path(data['init_main_from_path'])
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 277, in _fixup_main_from_path
+    run_name="__mp_main__")
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/runpy.py", line 263, in run_path
+    pkg_name=pkg_name, script_name=fname)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/runpy.py", line 96, in _run_module_code
+    mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+  File "/home/gyminy/Gyminy/RoboschoolFork/tests/train.py", line 28, in <module>
+    env = SubprocVecEnv([make_env('NaoLLC-v1', i) for i in range(n_cpu)])
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/site-packages/stable_baselines/common/vec_env/subproc_vec_env.py", line 90, in __init__
+    process.start()
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/process.py", line 112, in start
+    self._popen = self._Popen(self)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/context.py", line 291, in _Popen
+    return Popen(process_obj)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/popen_forkserver.py", line 35, in __init__
+    super().__init__(process_obj)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/popen_fork.py", line 20, in __init__
+    self._launch(process_obj)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/popen_forkserver.py", line 42, in _launch
+    prep_data = spawn.get_preparation_data(process_obj._name)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 143, in get_preparation_data
+    _check_not_importing_main()
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 136, in _check_not_importing_main
+    is not going to be frozen to produce an executable.''')
+RuntimeError: 
+        An attempt has been made to start a new process before the
+        current process has finished its bootstrapping phase.
+
+        This probably means that you are not using fork to start your
+        child processes and you have forgotten to use the proper idiom
+        in the main module:
+
+            if __name__ == '__main__':
+                freeze_support()
+                ...
+
+        The "freeze_support()" line can be omitted if the program
+        is not going to be frozen to produce an executable.
+Traceback (most recent call last):
+  File "train.py", line 28, in <module>
+    env = SubprocVecEnv([make_env('NaoLLC-v1', i) for i in range(n_cpu)])
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/site-packages/stable_baselines/common/vec_env/subproc_vec_env.py", line 95, in __init__
+    observation_space, action_space = self.remotes[0].recv()
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/connection.py", line 250, in recv
+    buf = self._recv_bytes()
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/connection.py", line 407, in _recv_bytes
+    buf = self._recv(4)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/connection.py", line 379, in _recv
+    chunk = read(handle, remaining)
+ConnectionResetError: [Errno 104] Connection reset by peer
+Traceback (most recent call last):
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/forkserver.py", line 261, in main
+    old_handlers)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/forkserver.py", line 297, in _serve_one
+    code = spawn._main(child_r)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 114, in _main
+    prepare(preparation_data)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 225, in prepare
+    _fixup_main_from_path(data['init_main_from_path'])
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 277, in _fixup_main_from_path
+    run_name="__mp_main__")
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/runpy.py", line 263, in run_path
+    pkg_name=pkg_name, script_name=fname)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/runpy.py", line 96, in _run_module_code
+    mod_name, mod_spec, pkg_name, script_name)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/runpy.py", line 85, in _run_code
+    exec(code, run_globals)
+  File "/home/gyminy/Gyminy/RoboschoolFork/tests/train.py", line 28, in <module>
+    env = SubprocVecEnv([make_env('NaoLLC-v1', i) for i in range(n_cpu)])
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/site-packages/stable_baselines/common/vec_env/subproc_vec_env.py", line 90, in __init__
+    process.start()
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/process.py", line 112, in start
+    self._popen = self._Popen(self)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/context.py", line 291, in _Popen
+    return Popen(process_obj)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/popen_forkserver.py", line 35, in __init__
+    super().__init__(process_obj)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/popen_fork.py", line 20, in __init__
+    self._launch(process_obj)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/popen_forkserver.py", line 42, in _launch
+    prep_data = spawn.get_preparation_data(process_obj._name)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 143, in get_preparation_data
+    _check_not_importing_main()
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/spawn.py", line 136, in _check_not_importing_main
+    is not going to be frozen to produce an executable.''')
+RuntimeError: 
+        An attempt has been made to start a new process before the
+        current process has finished its bootstrapping phase.
+
+        This probably means that you are not using fork to start your
+        child processes and you have forgotten to use the proper idiom
+        in the main module:
+
+            if __name__ == '__main__':
+                freeze_support()
+                ...
+
+        The "freeze_support()" line can be omitted if the program
+        is not going to be frozen to produce an executable.
+Traceback (most recent call last):
+  File "train.py", line 28, in <module>
+    env = SubprocVecEnv([make_env('NaoLLC-v1', i) for i in range(n_cpu)])
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/site-packages/stable_baselines/common/vec_env/subproc_vec_env.py", line 95, in __init__
+    observation_space, action_space = self.remotes[0].recv()
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/connection.py", line 250, in recv
+    buf = self._recv_bytes()
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/connection.py", line 407, in _recv_bytes
+    buf = self._recv(4)
+  File "/home/gyminy/.conda/envs/rbs/lib/python3.7/multiprocessing/connection.py", line 379, in _recv
+    chunk = read(handle, remaining)
+ConnectionResetError: [Errno 104] Connection reset by peer

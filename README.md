@@ -1,4 +1,7 @@
 # Gyminy
+
+<img src="./poster final gyminy.svg">
+
 Framework to "easily" implement reinforcement learning for robotic humanoids<br/>
 Gym + Roboschool + Stable_baselines + Nao URDF
 <br/>

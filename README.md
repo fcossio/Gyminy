@@ -1,5 +1,8 @@
 # Gyminy
+
 Teaching a Humanoid Robot to Walk in a Reinforcment Learning Framework
+
+Our ingredients 🧑‍🍳: Gym + Roboschool + Stable_baselines + Nao URDF
 
 ![Nao Walks](https://user-images.githubusercontent.com/39391180/185484973-deb34d87-2726-462e-af19-fa464d0ce5ce.gif)
 
@@ -10,12 +13,10 @@ https://docs.google.com/presentation/d/1L1BGWqgA0MRw4RYff0OiOh2cwVkDFJicj5Y1E3k-
 <img src="./poster final gyminy.svg">
 
 Framework to "easily" implement reinforcement learning for robotic humanoids<br/>
-Gym + Roboschool + Stable_baselines + Nao URDF
-<br/>
-<br/>
 
-<br/>
+
 ## Instalation
+
 To use the roboschool fork you need to use conda.
 ```
 https://github.com/fcossio/Gyminy.git

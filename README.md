@@ -18,12 +18,9 @@ Our ingredients 🧑‍🍳: Gym + Roboschool + Stable_baselines + Nao URDF
 ## Poster
 <img src="./poster final gyminy.svg">
 
-Framework to "easily" implement reinforcement learning for robotic humanoids<br/>
 
+## Usage
 
-## Instalation
-
-To use the roboschool fork you need to use conda.
 ```
 https://github.com/fcossio/Gyminy.git
 cd Gyminy/RoboschoolFork

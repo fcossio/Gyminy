@@ -1,13 +1,19 @@
 # Gyminy
+Teaching a Humanoid Robot to Walk in a Reinforcment Learning FrameWork
 
+![Nao Walks](https://user-images.githubusercontent.com/39391180/185484973-deb34d87-2726-462e-af19-fa464d0ce5ce.gif)
+
+## Final presentation slides
+https://docs.google.com/presentation/d/1L1BGWqgA0MRw4RYff0OiOh2cwVkDFJicj5Y1E3k-QVw/edit?usp=sharing
+
+## Poster
 <img src="./poster final gyminy.svg">
 
 Framework to "easily" implement reinforcement learning for robotic humanoids<br/>
 Gym + Roboschool + Stable_baselines + Nao URDF
 <br/>
 <br/>
-Currently is under development and only works for the Nao robot by Softbank Robotics.
-There is a fork of OpenAI's Roboschool repo that can simulate the Nao in a similar way that "Atlas Forward Walk" environment works. As of Oct 3rd 2019, we have not found a good reward function to train the agent.<-HELP WANTED
+
 <br/>
 ## Instalation
 To use the roboschool fork you need to use conda.

@@ -1,5 +1,5 @@
 # Gyminy
-Teaching a Humanoid Robot to Walk in a Reinforcment Learning FrameWork
+Teaching a Humanoid Robot to Walk in a Reinforcment Learning Framework
 
 ![Nao Walks](https://user-images.githubusercontent.com/39391180/185484973-deb34d87-2726-462e-af19-fa464d0ce5ce.gif)
 

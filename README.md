@@ -12,6 +12,9 @@ Our ingredients 🧑‍🍳: Gym + Roboschool + Stable_baselines + Nao URDF
 
 [Compilation of failures](https://drive.google.com/file/d/1tDZwt6tiwnU02cslxOfT5Amw7LAqPBey/view)
 
+## Blog
+[The robot diaries](https://medium.com/@fcossio/the-robot-diary-a-reinforcement-learning-journey-b8453ff8e16b)
+
 ## Poster
 <img src="./poster final gyminy.svg">
 
